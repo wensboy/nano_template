@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 
 # tasks and more here...
-task/*
+tasks/*
 jsconfig.json
 build/*
 
