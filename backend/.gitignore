@@ -1,0 +1,9 @@
+build.sh
+task
+*.log
+*.db
+*.sql
+*.sqlite
+*.sqlite3
+.env
+env.yaml

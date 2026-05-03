@@ -1,0 +1,229 @@
+basePath: /api/v1
+definitions:
+  middleware.Response:
+    properties:
+      code:
+        description: 0 for success, 1 for failure, -1 for error
+        type: integer
+      data:
+        description: response data
+      message:
+        description: response message
+        type: string
+    type: object
+  userSys.ChangePasswordRequest:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  userSys.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  userSys.RegisterRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  userSys.UpdateUserProfileRequest:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      nickname:
+        type: string
+      signature:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /inspect:
+    get:
+      consumes:
+      - application/json
+      description: inspect server information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: inspect server information
+      tags:
+      - example
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: ping health check
+      tags:
+      - example
+  /template/{template_id}:
+    get:
+      consumes:
+      - application/json
+      description: get template by id
+      parameters:
+      - description: Template ID
+        in: path
+        name: template_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: get template by id
+      tags:
+      - example
+  /user/delete:
+    delete:
+      consumes:
+      - application/json
+      description: deactivate current authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: deactivate user
+      tags:
+      - user
+  /user/details:
+    get:
+      consumes:
+      - application/json
+      description: get current authenticated user details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: get user details
+      tags:
+      - user
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: authenticate user and return jwt token
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/userSys.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: login user
+      tags:
+      - user
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: register a new user account
+      parameters:
+      - description: Register request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/userSys.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: register user
+      tags:
+      - user
+  /user/update/password:
+    put:
+      consumes:
+      - application/json
+      description: change password for current authenticated user
+      parameters:
+      - description: Change password request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/userSys.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: change user password
+      tags:
+      - user
+  /user/update/profile:
+    put:
+      consumes:
+      - application/json
+      description: update profile fields for current authenticated user
+      parameters:
+      - description: Update user profile request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/userSys.UpdateUserProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: update user profile
+      tags:
+      - user
+swagger: "2.0"

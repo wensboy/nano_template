@@ -1,0 +1,6 @@
+build.sh
+dev.*
+data/*
+.gitignore
+*.example
+*.sql

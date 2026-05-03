@@ -1,0 +1,352 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/inspect": {
+            "get": {
+                "description": "inspect server information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "inspect server information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/ping": {
+            "get": {
+                "description": "do ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "ping health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/template/{template_id}": {
+            "get": {
+                "description": "get template by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "get template by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Template ID",
+                        "name": "template_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/delete": {
+            "delete": {
+                "description": "deactivate current authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "deactivate user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/details": {
+            "get": {
+                "description": "get current authenticated user details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "get user details",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "description": "authenticate user and return jwt token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "login user",
+                "parameters": [
+                    {
+                        "description": "Login request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/userSys.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/register": {
+            "post": {
+                "description": "register a new user account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "register user",
+                "parameters": [
+                    {
+                        "description": "Register request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/userSys.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/update/password": {
+            "put": {
+                "description": "change password for current authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "change user password",
+                "parameters": [
+                    {
+                        "description": "Change password request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/userSys.ChangePasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/update/profile": {
+            "put": {
+                "description": "update profile fields for current authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "update user profile",
+                "parameters": [
+                    {
+                        "description": "Update user profile request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/userSys.UpdateUserProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "middleware.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "0 for success, 1 for failure, -1 for error",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "response data"
+                },
+                "message": {
+                    "description": "response message",
+                    "type": "string"
+                }
+            }
+        },
+        "userSys.ChangePasswordRequest": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "old_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
+                "old_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "userSys.LoginRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "userSys.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "userSys.UpdateUserProfileRequest": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
