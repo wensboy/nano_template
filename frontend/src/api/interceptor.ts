@@ -4,9 +4,11 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
+const BASE_URI = "/api/v1"
+
 // 创建 axios 实例
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: BASE_URI || "/api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LuMoon, LuSun } from "react-icons/lu";
+import { LuLogOut, LuMoon, LuSun } from "react-icons/lu";
 
 export default function HomePage() {
   const [isDark, setIsDark] = useState(true);
@@ -23,11 +23,11 @@ export default function HomePage() {
           {isDark ? <LuSun size={24} /> : <LuMoon size={24} />}
         </button>
         <button
-          className={`rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 hover:scale-105 ${isDark ? "bg-[#cc241d] text-[#fbf1c7]" : "bg-[#9d0006] text-[#fbf1c7]"}`}
+          className={`rounded-full p-3 transition-all duration-300 hover:scale-110 ${isDark ? "bg-[#3c3836] text-[#ebdbb2]" : "bg-[#ebdbb2] text-[#282828]"}`}
           onClick={handleLogout}
           type="button"
         >
-          Logout
+          <LuLogOut size={24}/>
         </button>
       </div>
 

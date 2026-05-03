@@ -4,7 +4,8 @@ import type { ApiResponse } from "@/models/response";
 
 type ApiResponseLike<TData> = ApiResponse<TData> | AxiosResponse<ApiResponse<TData>>;
 
-export type RequestFactory<TData> = () => Promise<ApiResponseLike<TData>>;
+export type Request<TData> = Promise<ApiResponseLike<TData>>;
+export type RequestFunc<TData> = () => Promise<ApiResponseLike<TData>>;
 
 export type ResponseInterceptor<TData> = (
   response: ApiResponse<TData>,
@@ -21,7 +22,7 @@ function normalizeResponse<TData>(response: ApiResponseLike<TData>): ApiResponse
 }
 
 export async function request<TData>(
-  requestFactory: RequestFactory<TData>,
+  requestFactory: RequestFunc<TData>,
   ...interceptors: ResponseInterceptor<TData>[]
 ): Promise<ApiResponse<TData>> {
   let response = normalizeResponse(await requestFactory());

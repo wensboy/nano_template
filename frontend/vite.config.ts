@@ -19,7 +19,7 @@ export default defineConfig({
         target: apiProxyTarget,
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ""), // 将匹配的 /api 替换为 ""
+        rewrite: (path) => path.replace(/^\/api/, "/api"), // 重写 uri
         configure: (proxy, options) => {
           proxy.on("proxyReq", (proxyReq, req) => {
 						const proxiedPath =
