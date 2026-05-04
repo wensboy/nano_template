@@ -1,0 +1,75 @@
+version: "3.8"
+
+# 网络
+networks:
+  nano-tier:
+    driver: bridge
+
+# 存储
+volumes:
+  db-store:
+  server-store:
+
+# 服务
+# 1. 构建的 Dockerfile 应该将原始目录的 Dockerfile 作为模板, 拷贝后编写.
+services:
+  # 通常构建来自 frontend/, client/, web/
+  # 启动 nginx 容器
+  web:
+    build:
+      context: ./frontend
+      dockerfile: frontend.Dockerfile
+    container_name: nano_web
+    restart: unless-stopped
+    networks:
+      - nano-tier
+    ports:
+      - "8080:80"
+      - "443:443"
+
+  # 通常构建来自 server/, backend/
+  # 启动 alpine 携带服务器二进制
+  server:
+    build:
+      context: ./backend
+      dockerfile: backend.Dockerfile
+    container_name: nano_server
+    restart: unless-stopped
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    # 用于注入环境变量, 优先级高于内部的 godotenv 加载的环境变量, 低于 Dcokerfile 中启动 cmd 参数
+    # environment:
+    networks:
+      - nano-tier
+    # volumes:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # 数据库服务
+  db-mysql:
+    image: mysql:8.0
+    container_name: nano_db_mysql
+    restart: unless-stopped
+    # ports:
+    #   - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_123456
+      MYSQL_DATABASE: test
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: ghost_123456
+    networks:
+      - nano-tier
+    volumes:
+      - db-store:/var/lib/mysql
+      # - :/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-P", "3306"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
