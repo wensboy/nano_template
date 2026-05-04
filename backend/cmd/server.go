@@ -115,6 +115,10 @@ func (s *Server) mountGlobalMiddleware() {
 }
 
 func (s *Server) mountStatic(cfg *config.WebConfig) {
+	if !cfg.ServerStatic {
+		util.Info("Skip mount static server...")
+		return
+	}
 	distDir := filepath.Clean(cfg.Dist)
 	indexFile := filepath.Join(distDir, cfg.Entry)
 
