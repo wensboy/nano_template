@@ -13,6 +13,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // 开启 cookie 处理
 });
 
 // 请求拦截器
@@ -38,11 +39,9 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     // 处理 401 错误
     if (error.response?.status === 401) {
-      // 删除 sessionStorage 中的 token
+      // todo: 如果 sessionStorage中有 token, 直接删除. 如果没有, 尝试发起登出请求通知后端将 cookie 中的token相关的字段清除
+      // 定向到登录页面. 
       sessionStorage.removeItem("token");
-      // todo: 待优化跳转, 先刷新如果没有token, 再跳转到登录页, 不使用window.location.href
-      // 跳转到登录页
-      // window.location.href = "/login";
     }
     return Promise.reject(error);
   },

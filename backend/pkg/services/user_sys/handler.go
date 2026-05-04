@@ -3,6 +3,7 @@ package userSys
 import (
 	"net/http"
 
+	"example.com/nano_template/pkg/config"
 	"example.com/nano_template/pkg/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,7 @@ import (
 type UserHandler interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
+	Logout(c *gin.Context)
 	GetUserDetails(c *gin.Context)
 	ChangePassword(c *gin.Context)
 	UpdateUserProfile(c *gin.Context)
@@ -20,29 +22,6 @@ type UserHandler interface {
 // userHandler handles user-related HTTP requests.
 type userHandler struct {
 	userService UserService
-}
-
-type RegisterRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type LoginRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type ChangePasswordRequest struct {
-	OldPassword string `json:"old_password" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required"`
-}
-
-type UpdateUserProfileRequest struct {
-	Avatar    string `json:"avatar"`
-	Nickname  string `json:"nickname"`
-	Gender    string `json:"gender"`
-	Email     string `json:"email"`
-	Signature string `json:"signature"`
 }
 
 // NewUserHandler creates a new UserHandler instance.
@@ -107,7 +86,43 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
+	jwtCfg := config.GetJwtConfig()
+	c.SetCookie(
+		jwtCfg.CookieOption.AccessKey,
+		token,
+		jwtCfg.CookieOption.MaxAge,
+		jwtCfg.CookieOption.Path,
+		jwtCfg.CookieOption.Domain,
+		jwtCfg.CookieOption.Secure,
+		jwtCfg.CookieOption.HttpOnly,
+	)
+
 	middleware.Succ(c, "Login successful", gin.H{"token": token})
+}
+
+// Logout godoc
+// @Summary logout user
+// @Schemes
+// @Description user logout
+// @Tags user
+// @Accept json
+// @Produce json
+// @Success 200 {object} middleware.Response
+// @Router /user/logout [get]
+// Logout handles user logout.
+func (h *userHandler) Logout(c *gin.Context) {
+	jwtCfg := config.GetJwtConfig()
+	c.SetCookie(
+		jwtCfg.CookieOption.AccessKey,
+		"",
+		-1,
+		jwtCfg.CookieOption.Path,
+		jwtCfg.CookieOption.Domain,
+		jwtCfg.CookieOption.Secure,
+		jwtCfg.CookieOption.HttpOnly,
+	)
+
+	middleware.Succ(c, "Logout successful", nil)
 }
 
 // GetUserDetails godoc

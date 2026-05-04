@@ -14,6 +14,7 @@ func MountUserSysRouter(Router *gin.RouterGroup, cfg *config.Config) {
 	{
 		userPublicRouter.POST("/register", userHandler.Register)
 		userPublicRouter.POST("/login", userHandler.Login)
+		userPublicRouter.GET("/logout", userHandler.Logout)
 	}
 
 	userPrivateRouter := Router.Group("/user").Use(middleware.JWTAuth())

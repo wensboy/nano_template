@@ -123,7 +123,10 @@ export default function LoginPage() {
         return;
       }
 
-      sessionStorage.setItem(tokenStorageKey, response.data.token);
+      if (response.data.token){
+        sessionStorage.setItem(tokenStorageKey, response.data.token);
+      }
+      
 
       if (!loginForm.rememberPassword) {
         setLoginForm((current) => ({

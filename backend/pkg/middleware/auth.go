@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 	"time"
@@ -48,21 +49,13 @@ func GenerateJWT(secret string, userID uint, username string, ttl time.Duration)
 // JWTAuth returns a Gin middleware that validates JWT tokens.
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			Erro(c, http.StatusUnauthorized, "authorization header required")
+		jwtConfig := config.GetJwtConfig()
+		tokenString, err := extractToken(c, jwtConfig.CookieOption.AccessKey)
+		if err != nil {
+			Erro(c, http.StatusUnauthorized, err.Error())
 			c.Abort()
 			return
 		}
-
-		parts := strings.Fields(authHeader)
-		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-			Erro(c, http.StatusUnauthorized, "authorization header format must be Bearer {token}")
-			c.Abort()
-			return
-		}
-
-		tokenString := parts[1]
 		claims := &JWTClaims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			if token.Method != jwt.SigningMethodHS256 {
@@ -87,6 +80,39 @@ func JWTAuth() gin.HandlerFunc {
 		c.Set(ContextUsernameKey, claims.Username)
 		c.Next()
 	}
+}
+
+func extractToken(c *gin.Context, cookieKey string) (string, error) {
+	if cookieToken, err := c.Cookie(cookieKey); err == nil && strings.TrimSpace(cookieToken) != "" {
+		return normalizeToken(cookieToken, false)
+	}
+
+	authHeader := strings.TrimSpace(c.GetHeader("Authorization"))
+	if authHeader == "" {
+		return "", errors.New("authorization token required")
+	}
+
+	return normalizeToken(authHeader, true)
+}
+
+func normalizeToken(value string, requireBearer bool) (string, error) {
+	parts := strings.Fields(value)
+	if len(parts) == 1 {
+		if requireBearer {
+			return "", errors.New("authorization header format must be Bearer {token}")
+		}
+		return parts[0], nil
+	}
+
+	if len(parts) == 2 && strings.EqualFold(parts[0], "Bearer") && parts[1] != "" {
+		return parts[1], nil
+	}
+
+	if requireBearer {
+		return "", errors.New("authorization header format must be Bearer {token}")
+	}
+
+	return "", errors.New("invalid token in cookie")
 }
 
 // GetUserIDFromContext retrieves the user id stored in Gin context by JWTAuth.

@@ -25,6 +25,24 @@ export function UserLogin(username: string, password: string): Request<LoginResp
   });
 }
 
+export function UserLogout(): Request<null> {
+  return api.get("/user/logout");
+}
+
+type UserDetailsResponse = {
+  user_id: number;
+  username: string;
+  avatar: string;
+  nickname: string;
+  email: string;
+  gender: string;
+  signature: string;
+};
+
+export function GetCurrentUserDetails(): Request<UserDetailsResponse> {
+  return api.get("/user/details");
+}
+
 // 注册请求端点
 type RegisterResponse = {
   user_id: number;

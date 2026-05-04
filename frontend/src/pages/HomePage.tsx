@@ -3,14 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { LuCompass, LuLayoutGrid, LuLogOut, LuMoon, LuSparkles, LuSun } from "react-icons/lu";
 
 import { ToolboxProvider, type ToolboxItem } from "@/app/toolbox";
+import { request } from "@/api/client";
+import { UserLogout } from "@/api/user_sys/auth";
 
 export default function HomePage() {
   const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
 
-  function handleLogout() {
-    sessionStorage.removeItem("token");
-    navigate("/login", { replace: true });
+  async function handleLogout() {
+    try {
+      await request(() => UserLogout());
+    } catch {
+      // Keep frontend logout resilient even if the backend cookie is already invalid.
+    } finally {
+      sessionStorage.removeItem("token");
+      navigate("/login", { replace: true });
+    }
   }
 
   const toolboxItems: ToolboxItem[] = [

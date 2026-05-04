@@ -31,3 +31,26 @@ type UserWithProfile struct {
 	Email     string `json:"email"`
 	Signature string `json:"signature"`
 }
+
+type RegisterRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required"`
+}
+
+type UpdateUserProfileRequest struct {
+	Avatar    string `json:"avatar"`
+	Nickname  string `json:"nickname"`
+	Gender    string `json:"gender"`
+	Email     string `json:"email"`
+	Signature string `json:"signature"`
+}

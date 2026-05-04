@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { request } from "@/api/client";
+import { GetCurrentUserDetails } from "@/api/user_sys/auth";
 
 const tokenStorageKey = "token";
-const refreshAttemptStorageKey = "auth:refresh-attempted";
 
 type AuthStatus = "checking" | "authorized" | "unauthorized";
 
@@ -12,23 +13,32 @@ export default function AuthGuard() {
 
   useEffect(() => {
     const token = sessionStorage.getItem(tokenStorageKey);
+    let isMounted = true;
 
     if (token) {
-      sessionStorage.removeItem(refreshAttemptStorageKey);
       setAuthStatus("authorized");
-      return;
+      return () => {
+        isMounted = false;
+      };
     }
 
-    const hasAttemptedRefresh = sessionStorage.getItem(refreshAttemptStorageKey) === "true";
+    void request(() => GetCurrentUserDetails())
+      .then((response) => {
+        if (!isMounted) {
+          return;
+        }
+        setAuthStatus(response.code === 0 ? "authorized" : "unauthorized");
+      })
+      .catch(() => {
+        if (!isMounted) {
+          return;
+        }
+        setAuthStatus("unauthorized");
+      });
 
-    if (!hasAttemptedRefresh) {
-      sessionStorage.setItem(refreshAttemptStorageKey, "true");
-      window.location.reload();
-      return;
-    }
-
-    sessionStorage.removeItem(refreshAttemptStorageKey);
-    setAuthStatus("unauthorized");
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (authStatus === "authorized") {
@@ -41,4 +51,3 @@ export default function AuthGuard() {
 
   return null;
 }
-
