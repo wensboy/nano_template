@@ -134,14 +134,17 @@ func (s *Server) mountStatic(cfg *config.WebConfig) {
 	s.engine.Static("/assets", filepath.Join(distDir, "assets"))
 	s.engine.StaticFile("/favicon.ico", filepath.Join(distDir, "favicon.ico"))
 
+	apiBasePath := strings.TrimRight(strings.TrimSpace(cfg.BaseUri), "/")
 	s.engine.NoRoute(func(c *gin.Context) {
-		if strings.HasPrefix(c.Request.URL.Path, "/api/") {
+		requestPath := c.Request.URL.Path
+		if apiBasePath != "" && (requestPath == apiBasePath || strings.HasPrefix(requestPath, apiBasePath+"/")) {
 			middleware.Erro(c, http.StatusNotFound, "API endpoint not found")
 			return
 		}
 
 		c.File(indexFile)
 	})
+	util.Info("mount static server...")
 }
 
 func (s *Server) mountRouter(cfg *config.Config) {

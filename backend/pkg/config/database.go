@@ -49,6 +49,7 @@ func DefaultDatabaseConfig() DatabaseConfig {
 var GDB *gorm.DB
 
 func InitDB(cfg *DatabaseConfig) {
+	util.Info("load database...")
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
@@ -71,6 +72,7 @@ func InitDB(cfg *DatabaseConfig) {
 		util.Warn("不支持的数据库类型: " + cfg.Type)
 	}
 	GDB = db
+	util.Info("database connected.")
 }
 
 func initMysqlDB(cfg *MysqlConfig, opts *gorm.Config) *gorm.DB {
