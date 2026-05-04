@@ -1,5 +1,5 @@
-import { FormEvent, useState } from "react";
-import { LuCircleHelp, LuLock, LuSquareUserRound, LuUserRound } from "react-icons/lu";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { LuChevronDown, LuCircleHelp, LuLock, LuSquareUserRound, LuUserRound } from "react-icons/lu";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { request } from "@/api/client";
 import { UserLogin, UserRegister } from "@/api/user_sys/auth";
@@ -8,6 +8,12 @@ import { InputFieldProps, LoginFormState, RegisterFormState } from "@/models/use
 import loginBackground from "@/assets/login_bg.png";
 
 const tokenStorageKey = "token";
+const roleOptions = [
+  { label: "默认", value: "default" },
+  { label: "管理", value: "admin" },
+  { label: "编辑", value: "editor" },
+  { label: "访客", value: "visitor" },
+];
 
 type AuthMode = "login" | "register";
 
@@ -50,17 +56,58 @@ export default function LoginPage() {
   const [mode, setMode] = useState<AuthMode>("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
   const [loginForm, setLoginForm] = useState<LoginFormState>({
     username: "",
     password: "",
-    rememberPassword: true,
+    rememberPassword: false,
   });
   const [registerForm, setRegisterForm] = useState<RegisterFormState>({
     username: "",
     password: "",
     confirmPassword: "",
   });
+  const roleMenuRef = useRef<HTMLDivElement | null>(null);
   const redirectPath = isLocationStateWithFrom(location.state) ? location.state.from.pathname : "/";
+  const activeRole = roleOptions.find((role) => role.value === (selectedRole || "default")) ?? roleOptions[0];
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (roleMenuRef.current && !roleMenuRef.current.contains(event.target as Node)) {
+        setIsRoleMenuOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsRoleMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  function handleRoleChange(role: string) {
+    const normalizedRole = role || "default";
+
+    setSelectedRole(role);
+    setIsRoleMenuOpen(false);
+    setLoginForm((current) => ({
+      ...current,
+      role: normalizedRole,
+    }));
+    setRegisterForm((current) => ({
+      ...current,
+      role: normalizedRole,
+    }));
+  }
 
   async function handleLoginSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -142,6 +189,59 @@ export default function LoginPage() {
       }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(148,163,184,0.2),transparent_42%)]" />
+      <div className="absolute right-6 bottom-6 z-10 w-[220px] max-w-[calc(100vw-48px)]">
+        <label className="block rounded-[24px] border border-[rgba(255,255,255,0.22)] bg-[rgba(255,255,255,0.1)] px-4 py-3 text-white shadow-[0_16px_40px_rgba(15,23,42,0.18)] backdrop-blur-xl">
+          <span className="mb-2 inline-flex items-center gap-2 text-xs tracking-[0.18em] text-[rgba(255,255,255,0.72)] uppercase">
+            <LuUserRound size={14} />
+            角色
+          </span>
+          <div className="relative" ref={roleMenuRef}>
+            <button
+              aria-expanded={isRoleMenuOpen}
+              aria-haspopup="listbox"
+              className="flex h-11 w-full items-center justify-between rounded-[16px] border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.15)] px-4 text-sm text-white outline-none backdrop-blur-[10px] transition duration-200 hover:bg-[rgba(255,255,255,0.2)] focus:border-white focus:bg-[rgba(255,255,255,0.25)]"
+              onClick={() => setIsRoleMenuOpen((current) => !current)}
+              type="button"
+            >
+              <span>{activeRole?.label}</span>
+              <span className="pointer-events-none text-[rgba(255,255,255,0.7)]">
+                <LuChevronDown
+                  className={`transition-transform duration-200 ${isRoleMenuOpen ? "rotate-180" : "rotate-0"}`}
+                  size={16}
+                />
+              </span>
+            </button>
+            {isRoleMenuOpen ? (
+              <div
+                className="absolute right-0 bottom-[calc(100%+10px)] left-0 overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.22)] bg-[rgba(255,255,255,0.12)] p-2 shadow-[0_18px_45px_rgba(15,23,42,0.22)] backdrop-blur-xl"
+                role="listbox"
+              >
+                <div className="space-y-1">
+                  {roleOptions.map((role) => {
+                    const isActive = role.value === activeRole?.value;
+
+                    return (
+                      <button
+                        className={`flex w-full items-center rounded-2xl border px-4 py-3 text-left text-sm text-white backdrop-blur-[14px] transition duration-200 ${
+                          isActive
+                            ? "border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.22)] shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+                            : "border-[rgba(255,255,255,0.14)] bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.24)] hover:bg-[rgba(255,255,255,0.18)]"
+                        }`}
+                        key={role.value || "default"}
+                        onClick={() => handleRoleChange(role.value)}
+                        role="option"
+                        type="button"
+                      >
+                        {role.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </label>
+      </div>
       <section className="relative w-full max-w-[416px] text-white">
         <div className="rounded-[32px] border border-[rgba(255,255,255,0.22)] bg-[rgba(255,255,255,0.08)] px-6 py-8 shadow-[0_24px_64px_rgba(15,23,42,0.28)] backdrop-blur-2xl sm:px-8">
           <div className="mx-auto w-full max-w-[320px]">
