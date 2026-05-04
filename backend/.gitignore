@@ -7,3 +7,4 @@ task
 *.sqlite3
 .env
 env.yaml
+*.Dockerfile

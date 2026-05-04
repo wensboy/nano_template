@@ -27,4 +27,5 @@ dist-ssr
 tasks/*
 jsconfig.json
 build/*
+*.Dockerfile
 
