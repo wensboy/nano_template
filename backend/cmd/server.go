@@ -142,6 +142,21 @@ func (s *Server) mountStatic(cfg *config.WebConfig) {
 			return
 		}
 
+		staticFile := filepath.Join(distDir, filepath.FromSlash(strings.TrimPrefix(requestPath, "/")))
+		if relPath, err := filepath.Rel(distDir, staticFile); err == nil &&
+			relPath != ".." &&
+			!strings.HasPrefix(relPath, ".."+string(filepath.Separator)) {
+			if fileInfo, err := os.Stat(staticFile); err == nil && !fileInfo.IsDir() {
+				c.File(staticFile)
+				return
+			}
+		}
+
+		if filepath.Ext(requestPath) != "" {
+			middleware.Erro(c, http.StatusNotFound, "Static file not found")
+			return
+		}
+
 		c.File(indexFile)
 	})
 	util.Info("mount static server...")

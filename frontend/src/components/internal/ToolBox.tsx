@@ -2,11 +2,14 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { LuX } from "react-icons/lu";
 
+import { useAppSelector } from "@/app/hooks";
 import { useToolbox } from "@/app/toolbox";
 import ToolboxButton from "@/components/internal/ToolboxButton";
 
 export default function ToolBox() {
   const { activeItem, activeItemId, closeToolbox, isOpen, items, openToolbox, setActiveItem } = useToolbox();
+  const themeMode = useAppSelector((state) => state.theme.mode);
+  const isDark = themeMode === "dark";
 
   useEffect(() => {
     if (!isOpen) {
@@ -36,14 +39,14 @@ export default function ToolBox() {
 
   const modal = isOpen ? (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4 py-8 backdrop-blur-sm"
+      className={`fixed inset-0 z-50 flex items-center justify-center px-4 py-8 backdrop-blur-sm ${isDark ? "bg-black/55" : "bg-black/35"}`}
       onClick={closeToolbox}
     >
       <div
-        className="relative flex h-[min(68vh,520px)] w-full max-w-3xl overflow-hidden rounded-[14px] border border-white/15 bg-white text-black shadow-[0_28px_100px_rgba(0,0,0,0.35)]"
+        className={`relative flex h-[min(68vh,520px)] w-full max-w-3xl overflow-hidden rounded-[14px] border text-black shadow-[0_28px_100px_rgba(0,0,0,0.35)] ${isDark ? "border-white/15 bg-white" : "border-black/10 bg-[#fbf1c7]"}`}
         onClick={(event) => event.stopPropagation()}
       >
-        <aside className="flex w-20 shrink-0 flex-col items-center gap-3 border-r border-black/10 bg-[#f4f4f4] px-3 py-6">
+        <aside className={`flex w-20 shrink-0 flex-col items-center gap-3 border-r px-3 py-6 ${isDark ? "border-black/10 bg-[#f4f4f4]" : "border-black/10 bg-[#ebdbb2]"}`}>
           {items.map((item) => {
             const isActive = item.id === activeItemId;
 
@@ -62,7 +65,7 @@ export default function ToolBox() {
           })}
         </aside>
 
-        <section className="flex min-w-0 flex-1 flex-col bg-white">
+        <section className={`flex min-w-0 flex-1 flex-col ${isDark ? "bg-white" : "bg-[#fbf1c7]"}`}>
           <header className="flex items-center justify-between border-b border-black/10 px-6 py-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-black/45">Toolbox</p>
@@ -92,7 +95,7 @@ export default function ToolBox() {
 
   return (
     <>
-      <ToolboxButton onClick={openToolbox} />
+      <ToolboxButton onClick={openToolbox} themeMode={themeMode} />
       {typeof document !== "undefined" ? createPortal(modal, document.body) : null}
     </>
   );

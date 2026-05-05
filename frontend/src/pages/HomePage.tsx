@@ -1,14 +1,17 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuCompass, LuLayoutGrid, LuLogOut, LuMoon, LuSparkles, LuSun } from "react-icons/lu";
 
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { ToolboxProvider, type ToolboxItem } from "@/app/toolbox";
+import { toggleThemeMode } from "@/app/themeSlice";
+import { getThemeButtonClassName } from "@/app/themeStyles";
 import { request } from "@/api/client";
 import { UserLogout } from "@/api/user_sys/auth";
 
 export default function HomePage() {
-  const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const isDark = useAppSelector((state) => state.theme.mode === "dark");
 
   async function handleLogout() {
     try {
@@ -55,7 +58,7 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-3">
             <button
               className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/85"
-              onClick={() => setIsDark((current) => !current)}
+              onClick={() => dispatch(toggleThemeMode())}
               type="button"
             >
               切换主题
@@ -95,11 +98,12 @@ export default function HomePage() {
       >
         <div className="absolute right-6 top-6 z-10 flex items-center gap-3">
           <button
-            className={`rounded-full p-3 transition-all duration-300 hover:scale-110 ${isDark ? "bg-[#3c3836] text-[#ebdbb2]" : "bg-[#ebdbb2] text-[#282828]"}`}
-            onClick={() => setIsDark(!isDark)}
+            className={`p-3 ${getThemeButtonClassName(isDark ? "dark" : "light")}`}
+            onClick={() => dispatch(toggleThemeMode())}
+            type="button"
           >
-            {isDark ? <LuSun size={24} /> : <LuMoon size={24} />}
-          </button>
+              {isDark ? <LuSun size={24} /> : <LuMoon size={24} />}
+            </button>
           <button
             className={`rounded-full p-3 transition-all duration-300 hover:scale-110 ${isDark ? "bg-[#3c3836] text-[#ebdbb2]" : "bg-[#ebdbb2] text-[#282828]"}`}
             onClick={handleLogout}
