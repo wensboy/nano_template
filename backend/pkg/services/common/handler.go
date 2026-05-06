@@ -29,7 +29,7 @@ func NewCommonHandler() CommonHandler {
 // @Tags example
 // @Accept json
 // @Produce json
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=nil}
 // @Router /ping [get]
 func (h *commonHandler) Ping(c *gin.Context) {
 	middleware.Succ(c, "pong", nil)
@@ -42,13 +42,13 @@ func (h *commonHandler) Ping(c *gin.Context) {
 // @Tags example
 // @Accept json
 // @Produce json
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=common.InspectResponse}
 // @Router /inspect [get]
 func (h *commonHandler) Inspect(c *gin.Context) {
-	middleware.Succ(c, "server is running", gin.H{
-		"version":     "1.0.0",
-		"author":      "your_name",
-		"description": "A simple API server",
+	middleware.Succ(c, "server is running", InspectResponse{
+		Version:     "v0.1.0",
+		Author:      "wendisx",
+		Description: "",
 	})
 }
 
@@ -60,7 +60,7 @@ func (h *commonHandler) Inspect(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param template_id path string true "Template ID"
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=common.TemplateResponse}
 // @Router /template/{template_id} [get]
 func (h *commonHandler) GetTemplate(c *gin.Context) {
 	tempId := c.Param("template_id")
@@ -73,9 +73,9 @@ func (h *commonHandler) GetTemplate(c *gin.Context) {
 		middleware.Fail(c, "template not found")
 		return
 	}
-	middleware.Succ(c, "template found", gin.H{
-		"id":          tempId,
-		"frontmatter": template.FrontMatter,
-		"content":     strings.ReplaceAll(string(template.Content), "\n", ""),
+	middleware.Succ(c, "template found", TemplateResponse{
+		Id:          tempId,
+		FrontMatter: template.FrontMatter,
+		Content:     strings.ReplaceAll(string(template.Content), "\n", ""),
 	})
 }

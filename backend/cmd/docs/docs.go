@@ -9,7 +9,16 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.example.com/support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -32,7 +41,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_services_common.InspectResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -55,7 +76,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -87,7 +120,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_services_common.TemplateResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -110,7 +155,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -133,7 +190,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_services_user_sys.UserWithProfile"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -159,7 +228,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userSys.LoginRequest"
+                            "$ref": "#/definitions/pkg_services_user_sys.LoginRequest"
                         }
                     }
                 ],
@@ -167,7 +236,54 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_services_user_sys.LoginResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/logout": {
+            "get": {
+                "description": "user logout",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "logout user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -193,7 +309,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userSys.RegisterRequest"
+                            "$ref": "#/definitions/pkg_services_user_sys.RegisterRequest"
                         }
                     }
                 ],
@@ -201,7 +317,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_services_user_sys.RegisterResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -227,7 +355,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userSys.ChangePasswordRequest"
+                            "$ref": "#/definitions/pkg_services_user_sys.ChangePasswordRequest"
                         }
                     }
                 ],
@@ -235,7 +363,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -261,7 +401,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userSys.UpdateUserProfileRequest"
+                            "$ref": "#/definitions/pkg_services_user_sys.UpdateUserProfileRequest"
                         }
                     }
                 ],
@@ -269,7 +409,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/middleware.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -277,7 +429,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "middleware.Response": {
+        "example_com_nano_template_pkg_config.TemplateFrontMatter": {
+            "type": "object",
+            "properties": {
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "example_com_nano_template_pkg_middleware.EmptyData": {
+            "type": "object"
+        },
+        "example_com_nano_template_pkg_middleware.Response": {
             "type": "object",
             "properties": {
                 "code": {
@@ -293,7 +456,35 @@ const docTemplate = `{
                 }
             }
         },
-        "userSys.ChangePasswordRequest": {
+        "pkg_services_common.InspectResponse": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_services_common.TemplateResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "frontmatter": {
+                    "$ref": "#/definitions/example_com_nano_template_pkg_config.TemplateFrontMatter"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_services_user_sys.ChangePasswordRequest": {
             "type": "object",
             "required": [
                 "new_password",
@@ -308,7 +499,7 @@ const docTemplate = `{
                 }
             }
         },
-        "userSys.LoginRequest": {
+        "pkg_services_user_sys.LoginRequest": {
             "type": "object",
             "required": [
                 "password",
@@ -323,7 +514,15 @@ const docTemplate = `{
                 }
             }
         },
-        "userSys.RegisterRequest": {
+        "pkg_services_user_sys.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_services_user_sys.RegisterRequest": {
             "type": "object",
             "required": [
                 "password",
@@ -338,7 +537,15 @@ const docTemplate = `{
                 }
             }
         },
-        "userSys.UpdateUserProfileRequest": {
+        "pkg_services_user_sys.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pkg_services_user_sys.UpdateUserProfileRequest": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -357,18 +564,52 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "pkg_services_user_sys.UserWithProfile": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "jwt format： Bearer {token}",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
+	Version:          "1.0",
+	Host:             "localhost:3000",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Nano Template Api",
+	Description:      "swagger for nano template",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

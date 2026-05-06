@@ -37,7 +37,7 @@ func NewUserHandler(userService UserService) UserHandler {
 // @Accept json
 // @Produce json
 // @Param request body RegisterRequest true "Register request"
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=userSys.RegisterResponse}
 // @Router /user/register [post]
 // Register handles user registration.
 func (h *userHandler) Register(c *gin.Context) {
@@ -53,7 +53,9 @@ func (h *userHandler) Register(c *gin.Context) {
 		return
 	}
 
-	middleware.Succ(c, "User registered successfully", gin.H{"user_id": user.ID})
+	middleware.Succ(c, "User registered successfully", RegisterResponse{
+		UserID: user.ID,
+	})
 }
 
 // Login godoc
@@ -64,7 +66,7 @@ func (h *userHandler) Register(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body LoginRequest true "Login request"
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=userSys.LoginResponse}
 // @Router /user/login [post]
 // Login handles user login.
 func (h *userHandler) Login(c *gin.Context) {
@@ -97,7 +99,9 @@ func (h *userHandler) Login(c *gin.Context) {
 		jwtCfg.CookieOption.HttpOnly,
 	)
 
-	middleware.Succ(c, "Login successful", gin.H{"token": token})
+	middleware.Succ(c, "Login successful", LoginResponse{
+		Token: token,
+	})
 }
 
 // Logout godoc
@@ -107,7 +111,7 @@ func (h *userHandler) Login(c *gin.Context) {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=middleware.EmptyData}
 // @Router /user/logout [get]
 // Logout handles user logout.
 func (h *userHandler) Logout(c *gin.Context) {
@@ -122,7 +126,7 @@ func (h *userHandler) Logout(c *gin.Context) {
 		jwtCfg.CookieOption.HttpOnly,
 	)
 
-	middleware.Succ(c, "Logout successful", nil)
+	middleware.SuccNoMore(c, "Logout successful")
 }
 
 // GetUserDetails godoc
@@ -132,7 +136,7 @@ func (h *userHandler) Logout(c *gin.Context) {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=userSys.UserWithProfile}
 // @Router /user/details [get]
 // GetUserDetails handles retrieving user details.
 func (h *userHandler) GetUserDetails(c *gin.Context) {
@@ -171,7 +175,7 @@ func (h *userHandler) GetUserDetails(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body ChangePasswordRequest true "Change password request"
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=middleware.EmptyData}
 // @Router /user/update/password [put]
 // ChangePassword handles password change.
 func (h *userHandler) ChangePassword(c *gin.Context) {
@@ -193,7 +197,7 @@ func (h *userHandler) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	middleware.Succ(c, "Password changed successfully", nil)
+	middleware.SuccNoMore(c, "Password changed successfully")
 }
 
 // UpdateUserProfile godoc
@@ -204,7 +208,7 @@ func (h *userHandler) ChangePassword(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body UpdateUserProfileRequest true "Update user profile request"
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=middleware.EmptyData}
 // @Router /user/update/profile [put]
 // UpdateUserProfile handles profile updates.
 func (h *userHandler) UpdateUserProfile(c *gin.Context) {
@@ -226,7 +230,7 @@ func (h *userHandler) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
-	middleware.Succ(c, "Profile updated successfully", nil)
+	middleware.SuccNoMore(c, "Profile updated successfully")
 }
 
 // DeactivateUser godoc
@@ -236,7 +240,7 @@ func (h *userHandler) UpdateUserProfile(c *gin.Context) {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Success 200 {object} middleware.Response
+// @Success 200 {object} middleware.Response{data=middleware.EmptyData}
 // @Router /user/delete [delete]
 // DeactivateUser handles user deactivation.
 func (h *userHandler) DeactivateUser(c *gin.Context) {
@@ -252,5 +256,5 @@ func (h *userHandler) DeactivateUser(c *gin.Context) {
 		return
 	}
 
-	middleware.Succ(c, "User deactivated successfully", nil)
+	middleware.SuccNoMore(c, "User deactivated successfully")
 }

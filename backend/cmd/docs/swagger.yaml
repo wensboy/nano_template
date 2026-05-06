@@ -1,6 +1,13 @@
 basePath: /api/v1
 definitions:
-  middleware.Response:
+  example_com_nano_template_pkg_config.TemplateFrontMatter:
+    properties:
+      role:
+        type: string
+    type: object
+  example_com_nano_template_pkg_middleware.EmptyData:
+    type: object
+  example_com_nano_template_pkg_middleware.Response:
     properties:
       code:
         description: 0 for success, 1 for failure, -1 for error
@@ -11,7 +18,25 @@ definitions:
         description: response message
         type: string
     type: object
-  userSys.ChangePasswordRequest:
+  pkg_services_common.InspectResponse:
+    properties:
+      author:
+        type: string
+      description:
+        type: string
+      version:
+        type: string
+    type: object
+  pkg_services_common.TemplateResponse:
+    properties:
+      content:
+        type: string
+      frontmatter:
+        $ref: '#/definitions/example_com_nano_template_pkg_config.TemplateFrontMatter'
+      id:
+        type: string
+    type: object
+  pkg_services_user_sys.ChangePasswordRequest:
     properties:
       new_password:
         type: string
@@ -21,7 +46,7 @@ definitions:
     - new_password
     - old_password
     type: object
-  userSys.LoginRequest:
+  pkg_services_user_sys.LoginRequest:
     properties:
       password:
         type: string
@@ -31,7 +56,12 @@ definitions:
     - password
     - username
     type: object
-  userSys.RegisterRequest:
+  pkg_services_user_sys.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  pkg_services_user_sys.RegisterRequest:
     properties:
       password:
         type: string
@@ -41,7 +71,12 @@ definitions:
     - password
     - username
     type: object
-  userSys.UpdateUserProfileRequest:
+  pkg_services_user_sys.RegisterResponse:
+    properties:
+      user_id:
+        type: integer
+    type: object
+  pkg_services_user_sys.UpdateUserProfileRequest:
     properties:
       avatar:
         type: string
@@ -54,8 +89,36 @@ definitions:
       signature:
         type: string
     type: object
+  pkg_services_user_sys.UserWithProfile:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      nickname:
+        type: string
+      signature:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+host: localhost:3000
 info:
-  contact: {}
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com/support
+  description: swagger for nano template
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Nano Template Api
+  version: "1.0"
 paths:
   /inspect:
     get:
@@ -68,7 +131,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_services_common.InspectResponse'
+              type: object
       summary: inspect server information
       tags:
       - example
@@ -83,7 +151,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: ping health check
       tags:
       - example
@@ -104,7 +177,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_services_common.TemplateResponse'
+              type: object
       summary: get template by id
       tags:
       - example
@@ -119,7 +197,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
+              type: object
       summary: deactivate user
       tags:
       - user
@@ -134,7 +217,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_services_user_sys.UserWithProfile'
+              type: object
       summary: get user details
       tags:
       - user
@@ -149,15 +237,40 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/userSys.LoginRequest'
+          $ref: '#/definitions/pkg_services_user_sys.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_services_user_sys.LoginResponse'
+              type: object
       summary: login user
+      tags:
+      - user
+  /user/logout:
+    get:
+      consumes:
+      - application/json
+      description: user logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
+              type: object
+      summary: logout user
       tags:
       - user
   /user/register:
@@ -171,14 +284,19 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/userSys.RegisterRequest'
+          $ref: '#/definitions/pkg_services_user_sys.RegisterRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_services_user_sys.RegisterResponse'
+              type: object
       summary: register user
       tags:
       - user
@@ -193,14 +311,19 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/userSys.ChangePasswordRequest'
+          $ref: '#/definitions/pkg_services_user_sys.ChangePasswordRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
+              type: object
       summary: change user password
       tags:
       - user
@@ -215,15 +338,26 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/userSys.UpdateUserProfileRequest'
+          $ref: '#/definitions/pkg_services_user_sys.UpdateUserProfileRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.Response'
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
+              type: object
       summary: update user profile
       tags:
       - user
+securityDefinitions:
+  BearerAuth:
+    description: jwt format： Bearer {token}
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

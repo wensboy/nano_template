@@ -37,9 +37,17 @@ type RegisterRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type RegisterResponse struct {
+	UserID uint `json:"user_id"`
+}
+
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
 }
 
 type ChangePasswordRequest struct {

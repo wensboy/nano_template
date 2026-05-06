@@ -12,12 +12,24 @@ type Response struct {
 	Data    interface{} `json:"data"`    // response data
 }
 
+type EmptyData struct{}
+type EmptySlice []struct{}
+
 // Succ sends a successful response with a message and data.
 func Succ(c *gin.Context, msg string, data interface{}) {
 	c.JSON(http.StatusOK, Response{
 		Code:    0,
 		Message: msg,
 		Data:    data,
+	})
+}
+
+// SuccNoMore sends a successful response with message and no more data.
+func SuccNoMore(c *gin.Context, msg string) {
+	c.JSON(http.StatusOK, Response{
+		Code:    0,
+		Message: msg,
+		Data:    EmptyData{},
 	})
 }
 
