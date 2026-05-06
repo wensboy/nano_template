@@ -1,12 +1,14 @@
 package config
 
 import (
+	"context"
 	"log"
 	"os"
 	"time"
 
 	"example.com/nano_template/pkg/util"
 	"github.com/glebarez/sqlite"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -33,6 +35,13 @@ type (
 	SqliteConfig struct {
 		Path string `yaml:"path"`
 	}
+	ValkeyConfig struct {
+		Enable   bool   `yaml:"enable"`
+		Address  string `yaml:"address"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+		Database int    `yaml:"database"`
+	}
 )
 
 // DefaultDatabaseConfig provides a default configuration for the database.
@@ -46,7 +55,26 @@ func DefaultDatabaseConfig() DatabaseConfig {
 	}
 }
 
+func DefaultValkeyConfig() ValkeyConfig {
+	return ValkeyConfig{
+		Enable:   false,
+		Address:  "localhost:6379",
+		Username: "",
+		Password: "",
+		Database: 0,
+	}
+}
+
 var GDB *gorm.DB
+var VDB *redis.Client
+
+func CloseDB() {
+	util.Info("close all database...")
+	db, _ := GDB.DB()
+	db.Close()
+	VDB.Close()
+	util.Info("close all database successfully")
+}
 
 func InitDB(cfg *DatabaseConfig) {
 	util.Info("load database...")
@@ -76,7 +104,6 @@ func InitDB(cfg *DatabaseConfig) {
 }
 
 func initMysqlDB(cfg *MysqlConfig, opts *gorm.Config) *gorm.DB {
-	// util.Info(cfg.DSN)
 	gdb, err := gorm.Open(mysql.Open(cfg.DSN), opts)
 	if err != nil {
 		panic("数据库连接失败: " + err.Error())
@@ -107,4 +134,30 @@ func initSqliteDB(cfg *SqliteConfig, opts *gorm.Config) *gorm.DB {
 	}
 
 	return gdb
+}
+
+func InitValkey(cfg *ValkeyConfig) {
+	util.Info("load valkey...")
+	VDB = redis.NewClient(&redis.Options{
+		Addr:            cfg.Address,
+		Username:        cfg.Username,
+		Password:        cfg.Password,
+		DB:              cfg.Database,
+		PoolSize:        20,
+		MinIdleConns:    5,
+		MaxActiveConns:  20,
+		DialTimeout:     5 * time.Second,
+		ReadTimeout:     3 * time.Second,
+		WriteTimeout:    3 * time.Second,
+		PoolTimeout:     4 * time.Second,
+		ConnMaxIdleTime: 30 * time.Minute,
+		ConnMaxLifetime: 1 * time.Hour,
+	})
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := VDB.Ping(ctx).Err(); err != nil {
+		util.Warn("load valkey fail")
+		return
+	}
+	util.Info("load valkey successfully")
 }

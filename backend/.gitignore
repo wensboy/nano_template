@@ -8,3 +8,4 @@ task
 .env
 env.yaml
 *.Dockerfile
+*.conf

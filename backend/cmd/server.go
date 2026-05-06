@@ -81,6 +81,7 @@ func (s *Server) Start(cfg *config.Config) {
 	util.Info("Preparing server")
 	s.mountConfigCheck(cfg)
 	s.mountDatabase(&cfg.DatabaseConfig)
+	s.mountMemDatabase(&cfg.ValkeyConfig)
 	s.mountHttpProxy(&cfg.HttpProxyConfig)
 	s.mountGlobalMiddleware()
 	s.mountStatic(&cfg.WebConfig)
@@ -180,6 +181,12 @@ func (s *Server) mountDatabase(dbConfig *config.DatabaseConfig) {
 		if dbConfig.AutoMigrate {
 			autoMigrate(config.GDB)
 		}
+	}
+}
+
+func (s *Server) mountMemDatabase(vConfig *config.ValkeyConfig) {
+	if vConfig.Enable {
+		config.InitValkey(vConfig)
 	}
 }
 

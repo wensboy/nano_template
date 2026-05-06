@@ -15,6 +15,7 @@ type (
 	Config struct {
 		ServerConfig    ServerConfig    `yaml:"server"`
 		DatabaseConfig  DatabaseConfig  `yaml:"database"`
+		ValkeyConfig    ValkeyConfig    `yaml:"valkey"`
 		JwtConfig       JwtConfig       `yaml:"jwt"`
 		HttpProxyConfig HttpProxyConfig `yaml:"httpProxy"`
 		LLMConfig       LLMConfig       `yaml:"llm"`
@@ -29,6 +30,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		ServerConfig:    DefaultServerConfig(),
 		DatabaseConfig:  DefaultDatabaseConfig(),
+		ValkeyConfig:    DefaultValkeyConfig(),
 		JwtConfig:       DefaultJwtConfig(),
 		HttpProxyConfig: DefaultHttpProxyConfig(),
 		LLMConfig:       DefaultLLMConfig(),

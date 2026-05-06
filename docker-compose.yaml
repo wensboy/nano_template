@@ -8,6 +8,7 @@ networks:
 # 存储
 volumes:
   db-store:
+  valkey-store:
   server-store:
 
 # 服务
@@ -73,3 +74,17 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+  # 内存数据库
+  db-valkey:
+    image: valkey/valkey:8.0-alpine
+    container_name: "nano_db_valkey"
+    restart: unless-stopped
+    # ports:
+    #   - "6379:6379"
+    # environment:
+    networks:
+      - nano-tier
+    volumes:
+      - valkey-store:/data
+      # - :/usr/local/etc/valkey/valkey.conf:ro
+    command: ["valkey-server", "/usr/local/etc/valkey/valkey.conf"]
