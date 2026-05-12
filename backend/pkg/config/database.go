@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -194,7 +193,6 @@ func InitValkey(cfg *ValkeyConfig) {
 
 func InitAliyunOss(cfg *AliyunOssConfig) {
 	util.Info("load aliyun oss...")
-	util.Info(fmt.Sprintf("%+v\n", cfg))
 	// 检查并更新cfg
 	if cfg.BucketPrefix == "" {
 		cfg.BucketPrefix = time.Now().Format(BUCKET_TIME_FORMAT)

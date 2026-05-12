@@ -90,6 +90,7 @@ func (s *Server) Start(cfg *config.Config) {
 	s.mountGlobalMiddleware()
 	s.mountStatic(&cfg.WebConfig)
 	s.mountRpcClient(&cfg.RpcConfig)
+	s.mountRpcServer(&cfg.ServerConfig.RpcServerConfig)
 	s.mountRouter(cfg)
 
 	util.Info("Starting server")
@@ -229,6 +230,16 @@ func (s *Server) mountRpcClient(cfg *config.RpcConfig) {
 		Grpc: conn,
 	})
 	rpc.SetRpcClient(client)
+}
+
+func (s *Server) mountRpcServer(cfg *config.RpcConfig) {
+	if !cfg.Enable {
+		util.Info("skip mount rpc server")
+		return
+	}
+	rpcServer := rpc.NewRpcServer(cfg)
+	rpcServer.StartBg()
+	util.Info("rpc server started listen ", zap.String("host", cfg.Host), zap.String("port", cfg.Port))
 }
 
 func (s *Server) mountOss(cfg *config.Config) {
