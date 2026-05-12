@@ -59,6 +59,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/native/aliyun/presign": {
+            "post": {
+                "description": "presign aliyun oss object",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aliyun"
+                ],
+                "summary": "presign aliyun oss object",
+                "parameters": [
+                    {
+                        "description": "presign request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_services_native_aliyun.PresignRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_services_native_aliyun.PresignResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/ping": {
             "get": {
                 "description": "do ping",
@@ -480,6 +526,55 @@ const docTemplate = `{
                     "$ref": "#/definitions/example_com_nano_template_pkg_config.TemplateFrontMatter"
                 },
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_services_native_aliyun.PresignRequest": {
+            "type": "object",
+            "properties": {
+                "mime": {
+                    "type": "string"
+                },
+                "object_key": {
+                    "type": "string"
+                },
+                "sender": {
+                    "description": "发送方, 作为标识字段, 无特殊含义",
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pkg_services_native_aliyun.PresignResponse": {
+            "type": "object",
+            "properties": {
+                "expiration": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "signed_headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pkg_services_native_aliyun.SignedHeader"
+                    }
+                },
+                "signed_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_services_native_aliyun.SignedHeader": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }

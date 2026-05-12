@@ -11,11 +11,7 @@ import (
 )
 
 const (
-	ProxyRequestKey   = "proxy_request"
-	ApiKey            = "API_KEY"
-	LLMTemperature    = "llm_temperature"
-	LLMEnableThinking = "llm_enable_thinking"
-	LLMModels         = "llm_models"
+	ProxyRequestKey = "proxy_request"
 )
 
 var gHttpProxy *http.Client

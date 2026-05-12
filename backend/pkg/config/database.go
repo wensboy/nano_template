@@ -2,16 +2,24 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
 
 	"example.com/nano_template/pkg/util"
+	aliyunoss "github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss"
+	"github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss/credentials"
+	openapicred "github.com/aliyun/credentials-go/credentials"
 	"github.com/glebarez/sqlite"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+)
+
+const (
+	BUCKET_TIME_FORMAT = "2006-01-02"
 )
 
 type (
@@ -42,6 +50,21 @@ type (
 		Password string `yaml:"password"`
 		Database int    `yaml:"database"`
 	}
+	AliyunOssConfig struct {
+		Enable          bool     `yaml:"enable"`
+		Address         string   `yaml:"address"`
+		Region          string   `yaml:"region"`
+		AccessKeyId     string   `yaml:"accessKeyId"`
+		AccessKeySecret string   `yaml:"accessKeySecret"`
+		StsRoleArn      string   `yaml:"stsRoleArn"`
+		SessionName     string   `yaml:"sessionName"`
+		Bucket          string   `yaml:"bucket"`
+		ValidMimes      []string `yaml:"validMimes"`
+		BucketPrefix    string   `yaml:"bucketPrefix"`
+		MaxSize         int      `yaml:"maxSize"`
+		Expires         int      `yaml:"expires"`
+		Callback        string   `yaml:"callback"`
+	}
 )
 
 // DefaultDatabaseConfig provides a default configuration for the database.
@@ -65,14 +88,21 @@ func DefaultValkeyConfig() ValkeyConfig {
 	}
 }
 
-var GDB *gorm.DB
-var VDB *redis.Client
+func DefaultAliyunOssConfig() AliyunOssConfig {
+	return AliyunOssConfig{
+		MaxSize: 10 * 1 << 10 * 1 << 10, // 10 MB
+	}
+}
+
+var _G_DB *gorm.DB
+var _G_VDB *redis.Client
+var _G_ALIYUN_OSS *aliyunoss.Client
 
 func CloseDB() {
 	util.Info("close all database...")
-	db, _ := GDB.DB()
+	db, _ := _G_DB.DB()
 	db.Close()
-	VDB.Close()
+	_G_VDB.Close()
 	util.Info("close all database successfully")
 }
 
@@ -99,7 +129,7 @@ func InitDB(cfg *DatabaseConfig) {
 	default:
 		util.Warn("不支持的数据库类型: " + cfg.Type)
 	}
-	GDB = db
+	_G_DB = db
 	util.Info("database connected.")
 }
 
@@ -138,7 +168,7 @@ func initSqliteDB(cfg *SqliteConfig, opts *gorm.Config) *gorm.DB {
 
 func InitValkey(cfg *ValkeyConfig) {
 	util.Info("load valkey...")
-	VDB = redis.NewClient(&redis.Options{
+	_G_VDB = redis.NewClient(&redis.Options{
 		Addr:            cfg.Address,
 		Username:        cfg.Username,
 		Password:        cfg.Password,
@@ -155,9 +185,44 @@ func InitValkey(cfg *ValkeyConfig) {
 	})
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := VDB.Ping(ctx).Err(); err != nil {
+	if err := _G_VDB.Ping(ctx).Err(); err != nil {
 		util.Warn("load valkey fail")
 		return
 	}
 	util.Info("load valkey successfully")
+}
+
+func InitAliyunOss(cfg *AliyunOssConfig) {
+	util.Info("load aliyun oss...")
+	util.Info(fmt.Sprintf("%+v\n", cfg))
+	// 检查并更新cfg
+	if cfg.BucketPrefix == "" {
+		cfg.BucketPrefix = time.Now().Format(BUCKET_TIME_FORMAT)
+	}
+
+	config := new(openapicred.Config).
+		SetType("ram_role_arn").
+		SetAccessKeyId(cfg.AccessKeyId).
+		SetAccessKeySecret(cfg.AccessKeySecret).
+		SetRoleArn(cfg.StsRoleArn).
+		SetRoleSessionName(cfg.SessionName).
+		SetRoleSessionExpiration(3600)
+	arnCredential, err := openapicred.NewCredential(config)
+	provider := credentials.CredentialsProviderFunc(func(ctx context.Context) (credentials.Credentials, error) {
+		if err != nil {
+			return credentials.Credentials{}, err
+		}
+		cred, err := arnCredential.GetCredential()
+		if err != nil {
+			return credentials.Credentials{}, err
+		}
+		return credentials.Credentials{
+			AccessKeyID:     *cred.AccessKeyId,
+			AccessKeySecret: *cred.AccessKeySecret,
+			SecurityToken:   *cred.SecurityToken,
+		}, nil
+	})
+	ossCfg := aliyunoss.LoadDefaultConfig().WithCredentialsProvider(provider).WithRegion(cfg.Region).WithSignatureVersion(aliyunoss.SignatureVersionV4)
+	_G_ALIYUN_OSS = aliyunoss.NewClient(ossCfg)
+	util.Info("aliyun oss init success")
 }

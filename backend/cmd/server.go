@@ -14,11 +14,14 @@ import (
 
 	"example.com/nano_template/pkg/config"
 	"example.com/nano_template/pkg/middleware"
+	"example.com/nano_template/pkg/rpc"
 	"example.com/nano_template/pkg/services/common"
+	"example.com/nano_template/pkg/services/native"
 	userSys "example.com/nano_template/pkg/services/user_sys"
 	"example.com/nano_template/pkg/util"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
 
@@ -81,10 +84,12 @@ func (s *Server) Start(cfg *config.Config) {
 	util.Info("Preparing server")
 	s.mountConfigCheck(cfg)
 	s.mountDatabase(&cfg.DatabaseConfig)
+	s.mountOss(cfg)
 	s.mountMemDatabase(&cfg.ValkeyConfig)
 	s.mountHttpProxy(&cfg.HttpProxyConfig)
 	s.mountGlobalMiddleware()
 	s.mountStatic(&cfg.WebConfig)
+	s.mountRpcClient(&cfg.RpcConfig)
 	s.mountRouter(cfg)
 
 	util.Info("Starting server")
@@ -168,6 +173,7 @@ func (s *Server) mountRouter(cfg *config.Config) {
 	// basic endpoints
 	{
 		common.MountCommonRouter(v1, cfg)
+		native.MountNativeRouter(v1, cfg)
 	}
 	// bussiness endpoints
 	{
@@ -179,7 +185,7 @@ func (s *Server) mountDatabase(dbConfig *config.DatabaseConfig) {
 	if dbConfig.Enable {
 		config.InitDB(dbConfig)
 		if dbConfig.AutoMigrate {
-			autoMigrate(config.GDB)
+			autoMigrate(config.GetGDB())
 		}
 	}
 }
@@ -208,6 +214,28 @@ func (s *Server) mountConfigCheck(cfg *config.Config) {
 		addrParts[0] = cfg.FlagConfig.Host
 	}
 	s.server.Addr = strings.Join(addrParts, ":")
+}
+
+func (s *Server) mountRpcClient(cfg *config.RpcConfig) {
+	if !cfg.Enable {
+		util.Info("skip mount rpc client")
+		return
+	}
+	conn, err := grpc.NewClient(cfg.Address)
+	if err != nil {
+		util.Warn("grpc client connection init fail")
+	}
+	client := rpc.NewRpcClient(rpc.RpcClientOption{
+		Grpc: conn,
+	})
+	rpc.SetRpcClient(client)
+}
+
+func (s *Server) mountOss(cfg *config.Config) {
+	// aliyun oss
+	if cfg.AliyunOssConfig.Enable {
+		config.InitAliyunOss(&cfg.AliyunOssConfig)
+	}
 }
 
 func autoMigrate(db *gorm.DB) {

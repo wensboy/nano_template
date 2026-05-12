@@ -6,7 +6,10 @@ import (
 	"regexp"
 
 	"example.com/nano_template/pkg/util"
+	aliyunoss "github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss"
+	"github.com/redis/go-redis/v9"
 	"gopkg.in/yaml.v3"
+	"gorm.io/gorm"
 )
 
 var envPlaceholderPattern = regexp.MustCompile(`\$\{([A-Za-z_][A-Za-z0-9_]*)(:=([^}]*))?\}`)
@@ -14,7 +17,9 @@ var envPlaceholderPattern = regexp.MustCompile(`\$\{([A-Za-z_][A-Za-z0-9_]*)(:=(
 type (
 	Config struct {
 		ServerConfig    ServerConfig    `yaml:"server"`
+		RpcConfig       RpcConfig       `yaml:"rpc"`
 		DatabaseConfig  DatabaseConfig  `yaml:"database"`
+		AliyunOssConfig AliyunOssConfig `yaml:"aliyunOss"`
 		ValkeyConfig    ValkeyConfig    `yaml:"valkey"`
 		JwtConfig       JwtConfig       `yaml:"jwt"`
 		HttpProxyConfig HttpProxyConfig `yaml:"httpProxy"`
@@ -29,7 +34,9 @@ type (
 func DefaultConfig() *Config {
 	return &Config{
 		ServerConfig:    DefaultServerConfig(),
+		RpcConfig:       DefaultRpcConfig(),
 		DatabaseConfig:  DefaultDatabaseConfig(),
+		AliyunOssConfig: DefaultAliyunOssConfig(),
 		ValkeyConfig:    DefaultValkeyConfig(),
 		JwtConfig:       DefaultJwtConfig(),
 		HttpProxyConfig: DefaultHttpProxyConfig(),
@@ -63,6 +70,18 @@ func LoadConfig(filePath string) (*Config, error) {
 
 	util.Info("Load config successfully")
 	return config, nil
+}
+
+func GetGDB() *gorm.DB {
+	return _G_DB
+}
+
+func GetGVDB() *redis.Client {
+	return _G_VDB
+}
+
+func GetAliyunOss() *aliyunoss.Client {
+	return _G_ALIYUN_OSS
 }
 
 // resolveEnvPlaceholders resolves placeholders like ${ENV:=default} in config content.

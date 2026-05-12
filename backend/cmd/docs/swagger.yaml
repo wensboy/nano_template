@@ -36,6 +36,38 @@ definitions:
       id:
         type: string
     type: object
+  pkg_services_native_aliyun.PresignRequest:
+    properties:
+      mime:
+        type: string
+      object_key:
+        type: string
+      sender:
+        description: 发送方, 作为标识字段, 无特殊含义
+        type: string
+      size:
+        type: integer
+    type: object
+  pkg_services_native_aliyun.PresignResponse:
+    properties:
+      expiration:
+        type: string
+      method:
+        type: string
+      signed_headers:
+        items:
+          $ref: '#/definitions/pkg_services_native_aliyun.SignedHeader'
+        type: array
+      signed_url:
+        type: string
+    type: object
+  pkg_services_native_aliyun.SignedHeader:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
   pkg_services_user_sys.ChangePasswordRequest:
     properties:
       new_password:
@@ -140,6 +172,33 @@ paths:
       summary: inspect server information
       tags:
       - example
+  /native/aliyun/presign:
+    post:
+      consumes:
+      - application/json
+      description: presign aliyun oss object
+      parameters:
+      - description: presign request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_services_native_aliyun.PresignRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_services_native_aliyun.PresignResponse'
+              type: object
+      summary: presign aliyun oss object
+      tags:
+      - aliyun
   /ping:
     get:
       consumes:

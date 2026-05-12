@@ -7,7 +7,7 @@ import (
 )
 
 func MountUserSysRouter(Router *gin.RouterGroup, cfg *config.Config) {
-	userService := NewUserService(config.GDB)
+	userService := NewUserService(config.GetGDB())
 	userHandler := NewUserHandler(userService)
 
 	userPublicRouter := Router.Group("/user")

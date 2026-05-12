@@ -8,6 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	ApiKey            = "llm_api_key"
+	LLMTemperature    = "llm_temperature"
+	LLMEnableThinking = "llm_enable_thinking"
+	LLMModels         = "llm_models"
+)
+
 func LLMHandler(enable bool, cfg *config.LLMConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !enable {

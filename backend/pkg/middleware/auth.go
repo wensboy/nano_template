@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	ContextUsernameKey = "username"
-	ContextUserIDKey   = "user_id"
+	ContextUsernameKey = "auth_username"
+	ContextUserIDKey   = "auth_user_id"
 )
 
 // JWTClaims represents the custom claims used in JWT tokens.
