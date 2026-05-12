@@ -1,5 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { LuCompass, LuLayoutGrid, LuLogOut, LuMoon, LuSparkles, LuSun } from "react-icons/lu";
+import {
+  LuCompass,
+  LuLayoutGrid,
+  LuLogOut,
+  LuMoon,
+  LuPaperclip,
+  LuSparkles,
+  LuSun,
+} from "react-icons/lu";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { ToolboxProvider, type ToolboxItem } from "@/app/toolbox";
@@ -7,6 +15,7 @@ import { toggleThemeMode } from "@/app/themeSlice";
 import { getThemeButtonClassName } from "@/app/themeStyles";
 import { request } from "@/api/client";
 import { UserLogout } from "@/api/user_sys/auth";
+import FilePicker from "@/components/internal/FilePicker";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -32,17 +41,26 @@ export default function HomePage() {
       content: (
         <div className="space-y-4">
           <p className="text-sm leading-7 text-black/70">
-            这个 toolbox 通过 provider 注入到页面顶层，右下角按钮会始终悬浮显示，适合挂载页面级的工具、
+            这个 toolbox 通过 provider
+            注入到页面顶层，右下角按钮会始终悬浮显示，适合挂载页面级的工具、
             说明和快捷入口。
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-black/10 bg-[#f7f7f7] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-black/45">Theme</p>
-              <p className="mt-2 text-lg font-semibold text-black">{isDark ? "Dark Atmosphere" : "Warm Light"}</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-black/45">
+                Theme
+              </p>
+              <p className="mt-2 text-lg font-semibold text-black">
+                {isDark ? "Dark Atmosphere" : "Warm Light"}
+              </p>
             </div>
             <div className="rounded-2xl border border-black/10 bg-[#f7f7f7] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-black/45">Auth</p>
-              <p className="mt-2 text-lg font-semibold text-black">Protected Route Ready</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-black/45">
+                Auth
+              </p>
+              <p className="mt-2 text-lg font-semibold text-black">
+                Protected Route Ready
+              </p>
             </div>
           </div>
         </div>
@@ -54,7 +72,9 @@ export default function HomePage() {
       icon: <LuSparkles size={18} />,
       content: (
         <div className="space-y-4">
-          <p className="text-sm leading-7 text-black/70">这里可以放当前页面常用的快捷操作，避免打断主视图布局。</p>
+          <p className="text-sm leading-7 text-black/70">
+            这里可以放当前页面常用的快捷操作，避免打断主视图布局。
+          </p>
           <div className="flex flex-wrap gap-3">
             <button
               className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/85"
@@ -71,6 +91,36 @@ export default function HomePage() {
               退出登录
             </button>
           </div>
+        </div>
+      ),
+    },
+    {
+      id: "files",
+      label: "Files",
+      icon: <LuPaperclip size={18} />,
+      content: (
+        <div className="space-y-4">
+          <p className="text-sm leading-7 text-black/70">
+            选择需要上传的文件，支持批量添加与单个移除。
+          </p>
+          <FilePicker
+            accept="image/*"
+            maxFiles={8}
+            onFilesChange={(files) => {
+              // eslint-disable-next-line no-console
+              console.log(
+                "FilePicker selection:",
+                files.map((f) => ({
+                  name: f.name,
+                  size: f.size,
+                  type: f.type,
+                })),
+              );
+            }}
+          />
+          <p className="text-xs text-black/40">
+            当前仅记录文件信息到控制台，后续可接入 OSS presign 上传流程。
+          </p>
         </div>
       ),
     },
@@ -102,8 +152,8 @@ export default function HomePage() {
             onClick={() => dispatch(toggleThemeMode())}
             type="button"
           >
-              {isDark ? <LuSun size={24} /> : <LuMoon size={24} />}
-            </button>
+            {isDark ? <LuSun size={24} /> : <LuMoon size={24} />}
+          </button>
           <button
             className={`rounded-full p-3 transition-all duration-300 hover:scale-110 ${isDark ? "bg-[#3c3836] text-[#ebdbb2]" : "bg-[#ebdbb2] text-[#282828]"}`}
             onClick={handleLogout}
