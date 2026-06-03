@@ -9,11 +9,10 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
-            "url": "http://www.example.com/support",
-            "email": "support@example.com"
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
         },
         "license": {
             "name": "Apache 2.0",
@@ -27,14 +26,11 @@ const docTemplate = `{
         "/inspect": {
             "get": {
                 "description": "inspect server information",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "common"
                 ],
                 "summary": "inspect server information",
                 "responses": {
@@ -43,13 +39,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/pkg_services_common.InspectResponse"
+                                            "$ref": "#/definitions/pkg_web_services_common.InspectResponse"
                                         }
                                     }
                                 }
@@ -59,9 +55,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/native/aliyun/presign": {
+        "/native/aliyun/presign/download": {
             "post": {
-                "description": "presign aliyun oss object",
+                "description": "presign download aliyun oss object",
                 "consumes": [
                     "application/json"
                 ],
@@ -71,15 +67,15 @@ const docTemplate = `{
                 "tags": [
                     "aliyun"
                 ],
-                "summary": "presign aliyun oss object",
+                "summary": "presign download aliyun oss object",
                 "parameters": [
                     {
-                        "description": "presign request",
+                        "description": "presign download request",
                         "name": "req",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/pkg_services_native_aliyun.PresignRequest"
+                            "$ref": "#/definitions/pkg_web_services_native_aliyun.PresignDownloadRequest"
                         }
                     }
                 ],
@@ -89,13 +85,123 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/pkg_services_native_aliyun.PresignResponse"
+                                            "$ref": "#/definitions/pkg_web_services_native_aliyun.PresignResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/native/aliyun/presign/list": {
+            "post": {
+                "description": "presign list aliyun oss objects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aliyun"
+                ],
+                "summary": "presign list aliyun oss objects",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "bucket prefix",
+                        "name": "bucket_prefix",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "marker",
+                        "name": "marker",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page size",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "description": "presign list request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_web_services_native_aliyun.PresignListRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_web_services_native_aliyun.ListObjectsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/native/aliyun/presign/upload": {
+            "post": {
+                "description": "presign upload aliyun oss object",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aliyun"
+                ],
+                "summary": "presign upload aliyun oss object",
+                "parameters": [
+                    {
+                        "description": "presign upload request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_web_services_native_aliyun.PresignUploadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_web_services_native_aliyun.PresignResponse"
                                         }
                                     }
                                 }
@@ -108,14 +214,11 @@ const docTemplate = `{
         "/ping": {
             "get": {
                 "description": "do ping",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "common"
                 ],
                 "summary": "ping health check",
                 "responses": {
@@ -124,13 +227,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "object"
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
                                         }
                                     }
                                 }
@@ -140,9 +243,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/template/{template_id}": {
+        "/role": {
             "get": {
-                "description": "get template by id",
+                "description": "retrieve roles with pagination",
                 "consumes": [
                     "application/json"
                 ],
@@ -150,14 +253,122 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "role"
                 ],
-                "summary": "get template by id",
+                "summary": "list roles",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "Page number (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (default 10)",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
-                        "description": "Template ID",
-                        "name": "template_id",
+                        "description": "Role keyword",
+                        "name": "keywords",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Role level",
+                        "name": "level",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Role state",
+                        "name": "state",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_role_GetResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "create a new role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "role"
+                ],
+                "summary": "create role",
+                "parameters": [
+                    {
+                        "description": "Create role request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_web_services_role.CreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_web_services_role.CreateResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/{id}": {
+            "get": {
+                "description": "retrieve a single role by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "role"
+                ],
+                "summary": "get role by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Role ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -168,13 +379,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/pkg_services_common.TemplateResponse"
+                                            "$ref": "#/definitions/pkg_web_services_role.GetResponse"
                                         }
                                     }
                                 }
@@ -182,11 +393,57 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/user/delete": {
+            },
+            "put": {
+                "description": "update a role by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "role"
+                ],
+                "summary": "update role",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update role request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_web_services_role.UpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "delete": {
-                "description": "deactivate current authenticated user",
+                "description": "delete a role by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -194,22 +451,31 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "role"
                 ],
-                "summary": "deactivate user",
+                "summary": "delete role",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
                                         }
                                     }
                                 }
@@ -219,9 +485,55 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/details": {
+        "/template/{id}": {
             "get": {
-                "description": "get current authenticated user details",
+                "description": "get template by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "get template by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Template ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_web_services_common.GetTemplateResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "cancel current authenticated user",
                 "consumes": [
                     "application/json"
                 ],
@@ -231,20 +543,55 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "get user details",
+                "summary": "cancel user",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/pkg_services_user_sys.UserWithProfile"
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/auth": {
+            "get": {
+                "description": "user auth check",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "user auth check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_web_services_user.AuthResponse"
                                         }
                                     }
                                 }
@@ -274,7 +621,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/pkg_services_user_sys.LoginRequest"
+                            "$ref": "#/definitions/pkg_web_services_user.LoginRequest"
                         }
                     }
                 ],
@@ -284,13 +631,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/pkg_services_user_sys.LoginResponse"
+                                            "$ref": "#/definitions/pkg_web_services_user.LoginResponse"
                                         }
                                     }
                                 }
@@ -319,13 +666,300 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/password": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update password for current authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "update user password",
+                "parameters": [
+                    {
+                        "description": "Update password request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_web_services_user.UpdatePasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get current authenticated user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "get user profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/pkg_web_services_user.GetProfileResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update profile fields for current authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "update user profile",
+                "parameters": [
+                    {
+                        "description": "Update profile request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_web_services_user.UpdateProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create profile for current authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "create user profile",
+                "parameters": [
+                    {
+                        "description": "Create profile request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkg_web_services_user.CreateProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete current authenticated user's profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "delete user profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/profiles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "retrieve user profiles with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "list user profiles",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (default 10)",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Profile keyword",
+                        "name": "keywords",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_user_GetProfileResponse"
                                         }
                                     }
                                 }
@@ -355,7 +989,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/pkg_services_user_sys.RegisterRequest"
+                            "$ref": "#/definitions/pkg_web_services_user.RegisterRequest"
                         }
                     }
                 ],
@@ -365,105 +999,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
+                                    "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/pkg_services_user_sys.RegisterResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/user/update/password": {
-            "put": {
-                "description": "change password for current authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "change user password",
-                "parameters": [
-                    {
-                        "description": "Change password request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/pkg_services_user_sys.ChangePasswordRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/user/update/profile": {
-            "put": {
-                "description": "update profile fields for current authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "update user profile",
-                "parameters": [
-                    {
-                        "description": "Update user profile request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/pkg_services_user_sys.UpdateUserProfileRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/example_com_nano_template_pkg_middleware.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/example_com_nano_template_pkg_middleware.EmptyData"
+                                            "$ref": "#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData"
                                         }
                                     }
                                 }
@@ -483,10 +1025,50 @@ const docTemplate = `{
                 }
             }
         },
-        "example_com_nano_template_pkg_middleware.EmptyData": {
+        "example_com_nano_template_pkg_web_middleware.EmptyData": {
             "type": "object"
         },
-        "example_com_nano_template_pkg_middleware.Response": {
+        "example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_role_GetResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pkg_web_services_role.GetResponse"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_user_GetProfileResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pkg_web_services_user.GetProfileResponse"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "example_com_nano_template_pkg_web_middleware.Response": {
             "type": "object",
             "properties": {
                 "code": {
@@ -502,21 +1084,7 @@ const docTemplate = `{
                 }
             }
         },
-        "pkg_services_common.InspectResponse": {
-            "type": "object",
-            "properties": {
-                "author": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
-        "pkg_services_common.TemplateResponse": {
+        "pkg_web_services_common.GetTemplateResponse": {
             "type": "object",
             "properties": {
                 "content": {
@@ -530,8 +1098,161 @@ const docTemplate = `{
                 }
             }
         },
-        "pkg_services_native_aliyun.PresignRequest": {
+        "pkg_web_services_common.InspectResponse": {
             "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.CommonPrefix": {
+            "type": "object",
+            "properties": {
+                "prefix": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.ListObjectsResponse": {
+            "type": "object",
+            "properties": {
+                "common_prefixes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pkg_web_services_native_aliyun.CommonPrefix"
+                    }
+                },
+                "contents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pkg_web_services_native_aliyun.ObjectProperties"
+                    }
+                },
+                "delimiter": {
+                    "type": "string"
+                },
+                "encoding_type": {
+                    "type": "string"
+                },
+                "is_truncated": {
+                    "type": "boolean"
+                },
+                "marker": {
+                    "type": "string"
+                },
+                "max_keys": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "next_marker": {
+                    "type": "string"
+                },
+                "prefix": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.ObjectOwner": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.ObjectProperties": {
+            "type": "object",
+            "properties": {
+                "etag": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "last_modified": {
+                    "type": "string"
+                },
+                "owner": {
+                    "$ref": "#/definitions/pkg_web_services_native_aliyun.ObjectOwner"
+                },
+                "restore_info": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "storage_class": {
+                    "type": "string"
+                },
+                "transition_time": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.PresignDownloadRequest": {
+            "type": "object",
+            "properties": {
+                "bucket_prefix": {
+                    "type": "string"
+                },
+                "getter": {
+                    "description": "获取方, 作为标识字段, 无特殊含义",
+                    "type": "string"
+                },
+                "object_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.PresignListRequest": {
+            "type": "object",
+            "properties": {
+                "getter": {
+                    "description": "获取方, 作为标识字段, 无特殊含义",
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.PresignResponse": {
+            "type": "object",
+            "properties": {
+                "expiration": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "signed_headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pkg_web_services_native_aliyun.SignedHeader"
+                    }
+                },
+                "signed_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_native_aliyun.PresignUploadRequest": {
+            "type": "object",
+            "required": [
+                "object_key"
+            ],
             "properties": {
                 "mime": {
                     "type": "string"
@@ -548,27 +1269,7 @@ const docTemplate = `{
                 }
             }
         },
-        "pkg_services_native_aliyun.PresignResponse": {
-            "type": "object",
-            "properties": {
-                "expiration": {
-                    "type": "string"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "signed_headers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/pkg_services_native_aliyun.SignedHeader"
-                    }
-                },
-                "signed_url": {
-                    "type": "string"
-                }
-            }
-        },
-        "pkg_services_native_aliyun.SignedHeader": {
+        "pkg_web_services_native_aliyun.SignedHeader": {
             "type": "object",
             "properties": {
                 "key": {
@@ -579,7 +1280,191 @@ const docTemplate = `{
                 }
             }
         },
-        "pkg_services_user_sys.ChangePasswordRequest": {
+        "pkg_web_services_role.CreateRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pkg_web_services_role.CreateResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pkg_web_services_role.GetResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_role.UpdateRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pkg_web_services_user.AuthResponse": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_user.CreateProfileRequest": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_user.GetProfileResponse": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pkg_web_services_user.LoginRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_user.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_user.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_web_services_user.UpdatePasswordRequest": {
             "type": "object",
             "required": [
                 "new_password",
@@ -594,53 +1479,7 @@ const docTemplate = `{
                 }
             }
         },
-        "pkg_services_user_sys.LoginRequest": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "pkg_services_user_sys.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "pkg_services_user_sys.RegisterRequest": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "pkg_services_user_sys.RegisterResponse": {
-            "type": "object",
-            "properties": {
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "pkg_services_user_sys.UpdateUserProfileRequest": {
+        "pkg_web_services_user.UpdateProfileRequest": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -649,62 +1488,28 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "gender": {
+                "nickname": {
                     "type": "string"
                 },
-                "nickname": {
+                "phone": {
                     "type": "string"
                 },
                 "signature": {
                     "type": "string"
                 }
             }
-        },
-        "pkg_services_user_sys.UserWithProfile": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "string"
-                },
-                "nickname": {
-                    "type": "string"
-                },
-                "signature": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        }
-    },
-    "securityDefinitions": {
-        "BearerAuth": {
-            "description": "jwt format： Bearer {token}",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:3000",
-	BasePath:         "/api/v1",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Nano Template Api",
-	Description:      "swagger for nano template",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

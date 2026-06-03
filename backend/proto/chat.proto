@@ -1,0 +1,189 @@
+syntax = "proto3";
+
+package chat;
+
+option go_package = "example.com/nano_template/proto/chat";
+
+message CreateSessionRequest {
+    int32 user_id = 1;
+    string title = 2;
+}
+
+message CreateSessionResponse {
+    string session_id = 1; // uuid string
+}
+
+message UpdateSessionRequest {
+    string session_id = 1;
+    string title = 2;
+}
+
+message UpdateSessionResponse {
+}
+
+message GetSessionRequest {
+    string session_id = 1;
+}
+
+message GetSessionResponse {
+    string session_id = 1;
+    string title = 2;
+    string created_at = 3;
+    string updated_at = 4;
+}
+message ListSessionsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+    int32 user_id = 3;
+    string key_words = 4;
+}
+
+message ListSessionsResponse {
+    repeated GetSessionResponse Sessions = 1;
+    int64 total = 2;
+}
+
+message DeleteSessionRequest {
+    int32 user_id = 1;
+    string session_id = 2;
+}
+
+message DeleteSessnoResponse {
+}
+
+message GenerateRequest {
+    int32 user_id = 1;
+    string user_message = 2;
+    string ai_model = 3;
+    string session_id = 4; // 获取对应的: 历史消息, 附件信息
+}
+
+// todo: stream response
+message GenerateResponse {
+
+}
+
+message GenerateModalRequest {
+    int32 user_id = 1;
+    string user_message = 2;
+    string ai_model = 3;
+    string session_id = 4; // 获取对应的: 历史消息, 附件信息
+}
+
+// todo: stream response
+message GenerateModalResponse {
+}
+
+message RecordRequest {
+    string session_id = 1;
+    string user_message = 2;
+    string ai_model = 3;
+}
+
+message RecordResponse {
+    int32 record_id = 1;
+}
+
+message UpdateRecordRequest {
+    int32 record_id = 1;
+    string ai_message = 2;
+}
+
+message UpdateRecordResponse {
+}
+
+message ListRecordsRequest {
+    string session_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message Record {
+    int32 record_id = 1;
+    string user_message = 2;
+    string ai_message = 3;
+    string ai_model = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
+
+message ListRecordsResponse {
+    repeated Record records = 1;
+    int64 total = 2;
+}
+
+message DeleteRecordRequest {
+    int32 record_id = 1;
+}
+
+message DeleteRecordResponse {
+}
+
+message UploadAppendixRequest {
+    int32 message_id = 1;
+    string mime = 2;
+    string name = 3;
+    string link = 4;
+    int64 size = 5;
+    int32 source = 6;
+}
+
+message UploadAppendixResponse {
+    int32 appendix_id = 1;
+}
+
+message UpdateAppendixRequest {
+    int32 appendix_id = 1;
+    string link  = 2;
+}
+
+message UpdateAppendixResponse {
+}
+
+message ListAppendixsRequest {
+    int32 message_id = 1;
+}
+
+message Appendix {
+    int32 appendix_id = 1;
+    string mime = 2;
+    string name = 3;
+    int64 size = 4;
+    int32 source = 5;
+    string created_at = 6;
+    string updated_at = 7;
+}
+
+message ListAppendixsResponse {
+    repeated Appendix appendixs = 1;
+    int64 total = 2;
+}
+
+message DeleteAppendixRequest {
+    int32 appendix_id = 1;
+}
+
+message DeleteAppendixResponse {    
+}
+
+service AiChatService {
+    // ai session
+    rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+    rpc UpdateSession(UpdateSessionRequest) returns (UpdateSessionResponse);
+    rpc GetSession(GetSessionRequest) returns (GetSessionResponse);
+    rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+    rpc DeleteSession(DeleteSessionRequest) returns (DeleteSessnoResponse);
+    // ai chat
+    rpc Generate(GenerateRequest) returns (stream GenerateResponse);
+    rpc GenerateModal(GenerateModalRequest) returns (stream GenerateModalResponse);
+    // ai messages
+    rpc Record(RecordRequest) returns (RecordResponse);
+    rpc UpdateRecord(UpdateRecordRequest) returns (UpdateRecordResponse);
+    rpc ListRecords(ListRecordsRequest) returns (ListRecordsResponse);
+    rpc DeleteRecord(DeleteRecordRequest) returns (DeleteRecordResponse); 
+    // chat appendixs
+    rpc UploadAppendixs(UploadAppendixRequest) returns (UploadAppendixResponse);
+    rpc UpdateAppendix(UpdateAppendixRequest) returns (UpdateAppendixResponse);
+    rpc ListAppendixs(ListAppendixsRequest) returns (ListAppendixsResponse);
+    rpc DeleteAppendix(DeleteAppendixRequest) returns (DeleteAppendixResponse);
+}

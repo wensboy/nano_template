@@ -10,6 +10,8 @@ export type ToolboxItem = {
   content: ReactNode;
 };
 
+export type ToolboxPlacement = "bottom-left" | "bottom-right" | "top-left" | "top-right";
+
 type ToolboxContextValue = {
   activeItem: ToolboxItem | null;
   activeItemId: string | null;
@@ -25,9 +27,10 @@ const ToolboxContext = createContext<ToolboxContextValue | null>(null);
 type ToolboxProviderProps = {
   children: ReactNode;
   items: ToolboxItem[];
+  placement?: ToolboxPlacement;
 };
 
-export function ToolboxProvider({ children, items }: ToolboxProviderProps) {
+export function ToolboxProvider({ children, items, placement = "bottom-right" }: ToolboxProviderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeItemId, setActiveItemId] = useState<string | null>(items[0]?.id ?? null);
 
@@ -66,7 +69,7 @@ export function ToolboxProvider({ children, items }: ToolboxProviderProps) {
       }}
     >
       {children}
-      <ToolBox />
+      <ToolBox placement={placement} />
     </ToolboxContext.Provider>
   );
 }

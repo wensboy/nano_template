@@ -1,1 +1,216 @@
 @import "tailwindcss";
+
+@keyframes ai-chat-preview-slide-in {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes ai-chat-preview-slide-out {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.ai-chat-preview-slide-in {
+  animation: ai-chat-preview-slide-in 180ms ease-out;
+}
+
+.ai-chat-preview-slide-out {
+  animation: ai-chat-preview-slide-out 180ms ease-in forwards;
+}
+
+.internal-rich-text-editor {
+  --dm-editor-border-radius: 0;
+  --dm-editor-padding: 0.875rem;
+  --dm-editor-shadow: none;
+  --dm-toolbar-border-radius: 0;
+  --dm-toolbar-padding: 0.375rem;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.internal-rich-text-editor.dm-theme-light {
+  --dm-bg: #ffffff;
+  --dm-text: #09090b;
+  --dm-muted: #71717a;
+  --dm-surface: #fafafa;
+  --dm-border-color: #e4e4e7;
+  --dm-hover: rgba(24, 24, 27, 0.06);
+  --dm-active: rgba(24, 24, 27, 0.12);
+  --dm-accent: #18181b;
+  --dm-accent-hover: #3f3f46;
+  --dm-accent-surface: rgba(24, 24, 27, 0.08);
+  --dm-focus-color: rgba(113, 113, 122, 0.35);
+  --dm-selection: rgba(113, 113, 122, 0.22);
+  --dm-code-surface: #f4f4f5;
+  --dm-code-color: #18181b;
+}
+
+.internal-rich-text-editor.dm-theme-dark {
+  --dm-bg: #18181b;
+  --dm-text: #fafafa;
+  --dm-muted: #a1a1aa;
+  --dm-surface: #27272a;
+  --dm-border-color: #3f3f46;
+  --dm-hover: rgba(244, 244, 245, 0.08);
+  --dm-active: rgba(244, 244, 245, 0.15);
+  --dm-accent: #fafafa;
+  --dm-accent-hover: #e4e4e7;
+  --dm-accent-surface: rgba(244, 244, 245, 0.12);
+  --dm-focus-color: rgba(161, 161, 170, 0.35);
+  --dm-selection: rgba(161, 161, 170, 0.25);
+  --dm-code-surface: #27272a;
+  --dm-code-color: #fafafa;
+}
+
+.internal-rich-text-editor__toolbar-row {
+  display: flex;
+  align-items: stretch;
+  background: var(--dm-bg);
+  border: 1px solid var(--dm-border-color);
+  border-bottom: 0;
+  flex-shrink: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 20;
+}
+
+.internal-rich-text-editor__toolbar-row > .dm-toolbar {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  flex: 1;
+  min-width: 0;
+  overflow: visible;
+}
+
+.internal-rich-text-editor__toolbar-actions {
+  display: flex;
+  align-items: center;
+  border-left: 1px solid var(--dm-border-color);
+  flex-shrink: 0;
+  gap: 0.25rem;
+  padding: 0.375rem;
+}
+
+.internal-rich-text-editor .dm-editor {
+  border-radius: 0;
+  box-shadow: none;
+  max-width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.internal-rich-text-editor__toolbar-row + .dm-editor {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror {
+  box-sizing: border-box;
+  max-height: 18rem;
+  max-width: 100%;
+  min-height: 14rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: anywhere;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0.67em 0;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 650;
+  line-height: 1.25;
+  margin: 0.75em 0 0.5em;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror h3 {
+  font-size: 1.25rem;
+  font-weight: 650;
+  line-height: 1.3;
+  margin: 0.75em 0 0.45em;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror h4 {
+  font-size: 1.1rem;
+  font-weight: 650;
+  line-height: 1.35;
+  margin: 0.65em 0 0.4em;
+}
+
+.internal-rich-text-editor .dm-editor > div {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror table {
+  max-width: 100%;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.internal-rich-text-editor .dm-editor .ProseMirror ul:not([data-type="taskList"]) li,
+.internal-rich-text-editor .dm-editor .ProseMirror ol li {
+  display: list-item;
+}
+
+.internal-rich-text-editor .dm-toolbar-dropdown-panel {
+  z-index: 90;
+}
+
+.internal-rich-text-editor .dm-bubble-menu,
+.internal-rich-text-editor .dm-link-popover,
+.internal-rich-text-editor .dm-notion-color-picker {
+  z-index: 100;
+}
+
+.internal-rich-text-editor--contained {
+  height: 100%;
+  min-height: 0;
+}
+
+.internal-rich-text-editor--contained .dm-editor {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.internal-rich-text-editor--contained .dm-editor > div {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.internal-rich-text-editor--contained .dm-editor .ProseMirror {
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
+}

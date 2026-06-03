@@ -1,13 +1,38 @@
-basePath: /api/v1
 definitions:
   example_com_nano_template_pkg_config.TemplateFrontMatter:
     properties:
       role:
         type: string
     type: object
-  example_com_nano_template_pkg_middleware.EmptyData:
+  example_com_nano_template_pkg_web_middleware.EmptyData:
     type: object
-  example_com_nano_template_pkg_middleware.Response:
+  example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_role_GetResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/pkg_web_services_role.GetResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_user_GetProfileResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/pkg_web_services_user.GetProfileResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  example_com_nano_template_pkg_web_middleware.Response:
     properties:
       code:
         description: 0 for success, 1 for failure, -1 for error
@@ -18,16 +43,7 @@ definitions:
         description: response message
         type: string
     type: object
-  pkg_services_common.InspectResponse:
-    properties:
-      author:
-        type: string
-      description:
-        type: string
-      version:
-        type: string
-    type: object
-  pkg_services_common.TemplateResponse:
+  pkg_web_services_common.GetTemplateResponse:
     properties:
       content:
         type: string
@@ -36,7 +52,105 @@ definitions:
       id:
         type: string
     type: object
-  pkg_services_native_aliyun.PresignRequest:
+  pkg_web_services_common.InspectResponse:
+    properties:
+      author:
+        type: string
+      description:
+        type: string
+      version:
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.CommonPrefix:
+    properties:
+      prefix:
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.ListObjectsResponse:
+    properties:
+      common_prefixes:
+        items:
+          $ref: '#/definitions/pkg_web_services_native_aliyun.CommonPrefix'
+        type: array
+      contents:
+        items:
+          $ref: '#/definitions/pkg_web_services_native_aliyun.ObjectProperties'
+        type: array
+      delimiter:
+        type: string
+      encoding_type:
+        type: string
+      is_truncated:
+        type: boolean
+      marker:
+        type: string
+      max_keys:
+        type: integer
+      name:
+        type: string
+      next_marker:
+        type: string
+      prefix:
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.ObjectOwner:
+    properties:
+      display_name:
+        type: string
+      id:
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.ObjectProperties:
+    properties:
+      etag:
+        type: string
+      key:
+        type: string
+      last_modified:
+        type: string
+      owner:
+        $ref: '#/definitions/pkg_web_services_native_aliyun.ObjectOwner'
+      restore_info:
+        type: string
+      size:
+        type: integer
+      storage_class:
+        type: string
+      transition_time:
+        type: string
+      type:
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.PresignDownloadRequest:
+    properties:
+      bucket_prefix:
+        type: string
+      getter:
+        description: 获取方, 作为标识字段, 无特殊含义
+        type: string
+      object_key:
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.PresignListRequest:
+    properties:
+      getter:
+        description: 获取方, 作为标识字段, 无特殊含义
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.PresignResponse:
+    properties:
+      expiration:
+        type: string
+      method:
+        type: string
+      signed_headers:
+        items:
+          $ref: '#/definitions/pkg_web_services_native_aliyun.SignedHeader'
+        type: array
+      signed_url:
+        type: string
+    type: object
+  pkg_web_services_native_aliyun.PresignUploadRequest:
     properties:
       mime:
         type: string
@@ -47,28 +161,137 @@ definitions:
         type: string
       size:
         type: integer
+    required:
+    - object_key
     type: object
-  pkg_services_native_aliyun.PresignResponse:
-    properties:
-      expiration:
-        type: string
-      method:
-        type: string
-      signed_headers:
-        items:
-          $ref: '#/definitions/pkg_services_native_aliyun.SignedHeader'
-        type: array
-      signed_url:
-        type: string
-    type: object
-  pkg_services_native_aliyun.SignedHeader:
+  pkg_web_services_native_aliyun.SignedHeader:
     properties:
       key:
         type: string
       value:
         type: string
     type: object
-  pkg_services_user_sys.ChangePasswordRequest:
+  pkg_web_services_role.CreateRequest:
+    properties:
+      description:
+        type: string
+      level:
+        type: integer
+      name:
+        type: string
+      state:
+        type: integer
+    required:
+    - name
+    type: object
+  pkg_web_services_role.CreateResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  pkg_web_services_role.GetResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      level:
+        type: integer
+      name:
+        type: string
+      state:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  pkg_web_services_role.UpdateRequest:
+    properties:
+      description:
+        type: string
+      level:
+        type: integer
+      name:
+        type: string
+      state:
+        type: integer
+    type: object
+  pkg_web_services_user.AuthResponse:
+    properties:
+      level:
+        type: integer
+      role_id:
+        type: integer
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  pkg_web_services_user.CreateProfileRequest:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      signature:
+        type: string
+    type: object
+  pkg_web_services_user.GetProfileResponse:
+    properties:
+      avatar:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      phone:
+        type: string
+      signature:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  pkg_web_services_user.LoginRequest:
+    properties:
+      password:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  pkg_web_services_user.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  pkg_web_services_user.RegisterRequest:
+    properties:
+      password:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  pkg_web_services_user.UpdatePasswordRequest:
     properties:
       new_password:
         type: string
@@ -78,84 +301,30 @@ definitions:
     - new_password
     - old_password
     type: object
-  pkg_services_user_sys.LoginRequest:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  pkg_services_user_sys.LoginResponse:
-    properties:
-      token:
-        type: string
-    type: object
-  pkg_services_user_sys.RegisterRequest:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  pkg_services_user_sys.RegisterResponse:
-    properties:
-      user_id:
-        type: integer
-    type: object
-  pkg_services_user_sys.UpdateUserProfileRequest:
+  pkg_web_services_user.UpdateProfileRequest:
     properties:
       avatar:
         type: string
       email:
         type: string
-      gender:
-        type: string
       nickname:
+        type: string
+      phone:
         type: string
       signature:
         type: string
     type: object
-  pkg_services_user_sys.UserWithProfile:
-    properties:
-      avatar:
-        type: string
-      email:
-        type: string
-      gender:
-        type: string
-      nickname:
-        type: string
-      signature:
-        type: string
-      user_id:
-        type: integer
-      username:
-        type: string
-    type: object
-host: localhost:3000
 info:
   contact:
-    email: support@example.com
+    email: support@swagger.io
     name: API Support
-    url: http://www.example.com/support
-  description: swagger for nano template
+    url: http://www.swagger.io/support
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Nano Template Api
-  version: "1.0"
 paths:
   /inspect:
     get:
-      consumes:
-      - application/json
       description: inspect server information
       produces:
       - application/json
@@ -164,26 +333,26 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/pkg_services_common.InspectResponse'
+                  $ref: '#/definitions/pkg_web_services_common.InspectResponse'
               type: object
       summary: inspect server information
       tags:
-      - example
-  /native/aliyun/presign:
+      - common
+  /native/aliyun/presign/download:
     post:
       consumes:
       - application/json
-      description: presign aliyun oss object
+      description: presign download aliyun oss object
       parameters:
-      - description: presign request
+      - description: presign download request
         in: body
         name: req
         required: true
         schema:
-          $ref: '#/definitions/pkg_services_native_aliyun.PresignRequest'
+          $ref: '#/definitions/pkg_web_services_native_aliyun.PresignDownloadRequest'
       produces:
       - application/json
       responses:
@@ -191,18 +360,82 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/pkg_services_native_aliyun.PresignResponse'
+                  $ref: '#/definitions/pkg_web_services_native_aliyun.PresignResponse'
               type: object
-      summary: presign aliyun oss object
+      summary: presign download aliyun oss object
+      tags:
+      - aliyun
+  /native/aliyun/presign/list:
+    post:
+      consumes:
+      - application/json
+      description: presign list aliyun oss objects
+      parameters:
+      - description: bucket prefix
+        in: query
+        name: bucket_prefix
+        type: string
+      - description: marker
+        in: query
+        name: marker
+        type: string
+      - description: page size
+        in: query
+        name: page_size
+        type: integer
+      - description: presign list request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_native_aliyun.PresignListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_native_aliyun.ListObjectsResponse'
+              type: object
+      summary: presign list aliyun oss objects
+      tags:
+      - aliyun
+  /native/aliyun/presign/upload:
+    post:
+      consumes:
+      - application/json
+      description: presign upload aliyun oss object
+      parameters:
+      - description: presign upload request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_native_aliyun.PresignUploadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_native_aliyun.PresignResponse'
+              type: object
+      summary: presign upload aliyun oss object
       tags:
       - aliyun
   /ping:
     get:
-      consumes:
-      - application/json
       description: do ping
       produces:
       - application/json
@@ -211,23 +444,166 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  type: object
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
               type: object
       summary: ping health check
       tags:
-      - example
-  /template/{template_id}:
+      - common
+  /role:
     get:
       consumes:
       - application/json
+      description: retrieve roles with pagination
+      parameters:
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default 10)
+        in: query
+        name: page_size
+        type: integer
+      - description: Role keyword
+        in: query
+        name: keywords
+        type: string
+      - description: Role level
+        in: query
+        name: level
+        type: integer
+      - description: Role state
+        in: query
+        name: state
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_role_GetResponse'
+              type: object
+      summary: list roles
+      tags:
+      - role
+    post:
+      consumes:
+      - application/json
+      description: create a new role
+      parameters:
+      - description: Create role request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_role.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_role.CreateResponse'
+              type: object
+      summary: create role
+      tags:
+      - role
+  /role/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a role by id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      summary: delete role
+      tags:
+      - role
+    get:
+      description: retrieve a single role by its id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_role.GetResponse'
+              type: object
+      summary: get role by id
+      tags:
+      - role
+    put:
+      description: update a role by id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update role request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_role.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      summary: update role
+      tags:
+      - role
+  /template/{id}:
+    get:
       description: get template by id
       parameters:
       - description: Template ID
         in: path
-        name: template_id
+        name: id
         required: true
         type: string
       produces:
@@ -237,19 +613,19 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/pkg_services_common.TemplateResponse'
+                  $ref: '#/definitions/pkg_web_services_common.GetTemplateResponse'
               type: object
       summary: get template by id
       tags:
-      - example
-  /user/delete:
+      - common
+  /user:
     delete:
       consumes:
       - application/json
-      description: deactivate current authenticated user
+      description: cancel current authenticated user
       produces:
       - application/json
       responses:
@@ -257,19 +633,21 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
               type: object
-      summary: deactivate user
+      security:
+      - BearerAuth: []
+      summary: cancel user
       tags:
       - user
-  /user/details:
+  /user/auth:
     get:
       consumes:
       - application/json
-      description: get current authenticated user details
+      description: user auth check
       produces:
       - application/json
       responses:
@@ -277,12 +655,12 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/pkg_services_user_sys.UserWithProfile'
+                  $ref: '#/definitions/pkg_web_services_user.AuthResponse'
               type: object
-      summary: get user details
+      summary: user auth check
       tags:
       - user
   /user/login:
@@ -296,7 +674,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/pkg_services_user_sys.LoginRequest'
+          $ref: '#/definitions/pkg_web_services_user.LoginRequest'
       produces:
       - application/json
       responses:
@@ -304,10 +682,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/pkg_services_user_sys.LoginResponse'
+                  $ref: '#/definitions/pkg_web_services_user.LoginResponse'
               type: object
       summary: login user
       tags:
@@ -324,12 +702,175 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
               type: object
       summary: logout user
+      tags:
+      - user
+  /user/password:
+    put:
+      consumes:
+      - application/json
+      description: update password for current authenticated user
+      parameters:
+      - description: Update password request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_user.UpdatePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: update user password
+      tags:
+      - user
+  /user/profile:
+    delete:
+      consumes:
+      - application/json
+      description: delete current authenticated user's profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: delete user profile
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: get current authenticated user profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_user.GetProfileResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: get user profile
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: create profile for current authenticated user
+      parameters:
+      - description: Create profile request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_user.CreateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: create user profile
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: update profile fields for current authenticated user
+      parameters:
+      - description: Update profile request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_user.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: update user profile
+      tags:
+      - user
+  /user/profiles:
+    get:
+      consumes:
+      - application/json
+      description: retrieve user profiles with pagination
+      parameters:
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default 10)
+        in: query
+        name: page_size
+        type: integer
+      - description: Profile keyword
+        in: query
+        name: keywords
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_user_GetProfileResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: list user profiles
       tags:
       - user
   /user/register:
@@ -343,7 +884,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/pkg_services_user_sys.RegisterRequest'
+          $ref: '#/definitions/pkg_web_services_user.RegisterRequest'
       produces:
       - application/json
       responses:
@@ -351,72 +892,12 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/pkg_services_user_sys.RegisterResponse'
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
               type: object
       summary: register user
       tags:
       - user
-  /user/update/password:
-    put:
-      consumes:
-      - application/json
-      description: change password for current authenticated user
-      parameters:
-      - description: Change password request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/pkg_services_user_sys.ChangePasswordRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
-              type: object
-      summary: change user password
-      tags:
-      - user
-  /user/update/profile:
-    put:
-      consumes:
-      - application/json
-      description: update profile fields for current authenticated user
-      parameters:
-      - description: Update user profile request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/pkg_services_user_sys.UpdateUserProfileRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/example_com_nano_template_pkg_middleware.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/example_com_nano_template_pkg_middleware.EmptyData'
-              type: object
-      summary: update user profile
-      tags:
-      - user
-securityDefinitions:
-  BearerAuth:
-    description: jwt format： Bearer {token}
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

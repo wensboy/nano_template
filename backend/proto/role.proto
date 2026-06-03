@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package role;
+
+option go_package = "example.com/nano_template/proto/role";
+
+message Role {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  int32 level = 4;
+  uint32 state = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+message CreateRequest {
+  string name = 1;
+  string description = 2;
+  int32 level = 3;
+  uint32 state = 4;
+}
+
+message CreateResponse {
+  uint64 id = 1;
+}
+
+message GetRequest {
+  uint64 id = 1;
+}
+
+message GetResponse {
+  Role role = 1;
+}
+
+message ListRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string keywords = 3;
+  int32 level = 4;
+  uint32 state = 5;
+}
+
+message ListResponse {
+  repeated Role roles = 1;
+  int64 total = 2;
+}
+
+message UpdateRequest {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  int32 level = 4;
+  uint32 state = 5;
+}
+
+message UpdateResponse {}
+
+message DeleteRequest {
+  uint64 id = 1;
+}
+
+message DeleteResponse {}
+
+service RoleService {
+  rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}

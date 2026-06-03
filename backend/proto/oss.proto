@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package oss;
+
+option go_package = "example.com/nano_template/proto/oss";
+
+message SignedHeader {
+    string key = 1;
+    string value = 2;
+}
+
+message PresignGeneralResponse {
+    string signed_url = 1;
+    string signed_method = 2;
+    string expiration = 3;
+    repeated SignedHeader signed_headers = 4;
+}
+
+message PresignPutObjectRequest {
+    string object_key = 1;
+    int64 size = 2;
+    string mime = 3;
+    string sender = 4;
+}
+
+message PresignPutObjectResponse {
+    PresignGeneralResponse presign_response = 1;
+}
+
+message PresignGetObjectRequest {
+    string bucket_prefix = 1;
+    string object_key = 2;
+    string getter = 3;
+}
+
+message PresignGetObjectResponse {
+    PresignGeneralResponse presign_response = 1;
+}
+
+message ObjectOwner {
+    string id = 1;
+    string display_name = 2;
+}
+
+message ObjectProperties {
+    string key = 1;
+    string type = 2;
+    int64 size = 3;
+    string etag = 4;
+    string last_modified = 5;
+    string storage_class = 6;
+    ObjectOwner owner = 7;
+    string restore_info = 8;
+    string transition_time = 9;
+}
+
+message CommonPrefix {
+    string prefix = 1;
+}
+
+message ListObjectsRequest {
+    string bucket_prefix = 1;
+    string marker = 2;
+    int32 max_keys = 3;
+    string getter = 4;
+}
+
+message ListObjectsResponse {
+    string name = 1;
+    string prefix = 2;
+    string marker = 3;
+    int32 max_keys = 4;
+    string delimiter = 5;
+    bool is_truncated = 6;
+    string next_marker = 7;
+    string encoding_type = 8;
+    repeated ObjectProperties contents = 9;
+    repeated CommonPrefix common_prefixes = 10;
+}
+
+service AliyunOssService {
+  rpc PresignPutObject(PresignPutObjectRequest) returns (PresignPutObjectResponse);
+  rpc PresignGetObject(PresignGetObjectRequest) returns (PresignGetObjectResponse);
+  rpc ListObjects(ListObjectsRequest) returns (ListObjectsResponse);
+}

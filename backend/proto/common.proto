@@ -12,6 +12,29 @@ message PingResponse {
   string message = 1;
 }
 
+message InspectRequest {}
+
+message InspectResponse {
+  string version = 1;
+  string author = 2;
+  string description = 3;
+}
+
+message GetTemplateRequest {
+  string template_id = 1;
+}
+
+message TemplateFrontMatter {
+  string role = 1;
+}
+
+message GetTemplateResponse {
+  TemplateFrontMatter front_matter = 1;
+  string content = 2;
+}
+
 service CommonService {
   rpc Ping(PingRequest) returns (PingResponse);
+  rpc Inspect(InspectRequest) returns (InspectResponse);
+  rpc GetTemplate(GetTemplateRequest) returns (GetTemplateResponse);
 }

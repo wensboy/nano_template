@@ -1,13 +1,13 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"regexp"
 
 	"example.com/nano_template/pkg/util"
 	aliyunoss "github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 	"gorm.io/gorm"
 )
@@ -26,6 +26,7 @@ type (
 		LLMConfig       LLMConfig       `yaml:"llm"`
 		TemplateConfig  TemplateConfig  `yaml:"template"`
 		WebConfig       WebConfig       `yaml:"web"`
+		SystemConfig    SystemConfig    `yaml:"system"`
 		FlagConfig      FlagConfig
 	}
 )
@@ -43,13 +44,14 @@ func DefaultConfig() *Config {
 		LLMConfig:       DefaultLLMConfig(),
 		TemplateConfig:  DefaultTemplateConfig(),
 		WebConfig:       DefaultWebConfig(),
+		SystemConfig:    DefaultSystemConfig(),
 		FlagConfig:      DefaultFlagConfig(),
 	}
 }
 
 // LoadConfig loads the application configuration from a YAML file.
 func LoadConfig(filePath string) (*Config, error) {
-	util.Info(fmt.Sprintf("Starting load config from %s", filePath))
+	util.Info("[config]", zap.String("load-file", filePath))
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
@@ -65,10 +67,13 @@ func LoadConfig(filePath string) (*Config, error) {
 
 	// 回调处理配置
 	setJwtConfig(config.JwtConfig)
-	BindFlags(config)
 	MapTemplates(&config.TemplateConfig)
 
-	util.Info("Load config successfully")
+	// 初始化调用
+	_ = config.SystemConfig.LoadRole()
+	_ = config.SystemConfig.LoadSwagger()
+
+	util.Info("[config]", zap.String("load", "succ"))
 	return config, nil
 }
 

@@ -1,51 +1,39 @@
 package main
 
 import (
-	"flag"
+	"context"
+	"os"
 
-	"example.com/nano_template/pkg/config"
 	"example.com/nano_template/pkg/util"
-	"github.com/joho/godotenv"
 
-	docs "example.com/nano_template/cmd/docs"
+	_ "example.com/nano_template/cmd/docs"
+	"github.com/urfave/cli/v3"
 )
 
-func init() {
-	docs.SwaggerInfo.BasePath = "/api/v1"
-}
-
-// @title           Nano Template Api
-// @version         1.0
-// @description     swagger for nano template
-// @termsOfService  http://swagger.io/terms/
-
 // @contact.name   API Support
-// @contact.url    http://www.example.com/support
-// @contact.email  support@example.com
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
 
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:3000
-// @BasePath  /api/v1
-
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description jwt format： Bearer {token}
+var (
+	APP_NAME        = "nanot"
+	APP_VERSION     = "v0.1.0"
+	APP_LAST_MODIFY = "unknown"
+)
 
 func main() {
 
-	// Load environment variables from .env in local/dev; ignore if file does not exist.
-	_ = godotenv.Load("./.env")
-
-	util.InitLogger(false, "")
-
-	cfg, err := config.LoadConfig("./env.yaml")
-	if err != nil {
-		panic(err)
+	cmd := &cli.Command{
+		Name:    APP_NAME,
+		Version: APP_VERSION,
 	}
-	flag.Parse()
-	srv := NewServer(&cfg.ServerConfig)
-	srv.Start(cfg)
+
+	MountCommands(cmd)
+
+	if err := cmd.Run(context.Background(), os.Args); err != nil {
+		util.Error(err.Error())
+	}
+
 }

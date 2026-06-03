@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "example.com/nano_template/proto/user";
+
+/* 用户基本服务 */
+
+message RegisterRequest {
+    string username = 1;
+    string password = 2;
+    int32 role_id = 3;
+}
+
+message RegisterResponse {}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+    int32 role_id = 3;
+}
+
+message LoginResponse {
+    string token = 1;
+}
+
+message UpdatePasswordRequest {
+    int32 user_id = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
+message UpdatePasswordResponse {}
+
+message CancelRequest {
+    int32 user_id = 1;
+}
+
+message CancelResponse {}
+
+service UserService {
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse);
+    rpc Cancel(CancelRequest) returns (CancelResponse);
+}
+
+/* 用户首选项服务 */
+
+message CreateUserProfileRequest {
+    int32 user_id = 1;
+    string avatar = 2;
+    string nickname = 3;
+    string email = 4;
+    string phone = 5;
+    string signature = 6;
+}
+
+message CreateUserProfileResponse {}
+
+message GetUserProfileRequest {
+    int32 user_id = 1;
+    int32 id = 2;
+}
+
+message GetUserProfileResponse {
+    int32 id = 1;
+    int32 user_id = 2;
+    string avatar = 3;
+    string nickname = 4;
+    string email = 5;
+    string phone = 6;
+    string signature = 7;
+    string created_at = 8;
+    string updated_at = 9;
+}
+
+message ListUserProfilesRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+    string keywords = 3;
+}
+
+message ListUserProfilesResponse {
+    repeated GetUserProfileResponse user_profiles = 1;
+    int64 total = 2;
+}
+
+message UpdateUserProfileRequest {
+    int32 id = 1;
+    int32 user_id = 2;
+    string avatar = 3;
+    string nickname = 4;
+    string email = 5;
+    string phone = 6;
+    string signature = 7;
+}
+
+message UpdateUserProfileResponse {}
+
+message DeleteUserProfileRequest {
+    int32 id = 1;
+    int32 user_id = 2;
+}
+
+message DeleteUserProfileResponse {}
+
+service UserProfileService {
+    rpc Create(CreateUserProfileRequest) returns (CreateUserProfileResponse);
+    rpc Get(GetUserProfileRequest) returns (GetUserProfileResponse);
+    rpc List(ListUserProfilesRequest) returns (ListUserProfilesResponse);
+    rpc Update(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
+    rpc Delete(DeleteUserProfileRequest) returns (DeleteUserProfileResponse);
+}

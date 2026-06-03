@@ -1,0 +1,8 @@
+{
+    "title": "Nano Template Api",
+    "version": "v0.1",
+    "description": "swagger opanapi for nano template",
+    "termsOfService": "http://swagger.io/terms/",
+    "host": "localhost:3000",
+    "basePath": "/api/v1"
+}

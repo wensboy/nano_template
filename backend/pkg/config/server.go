@@ -5,6 +5,7 @@ type (
 	ServerConfig struct {
 		Host            string    `yaml:"host"`
 		Port            string    `yaml:"port"`
+		BaseUri         string    `yaml:"baseUri"`
 		ReadTimeout     int       `yaml:"readTimeout"`
 		WriteTimeout    int       `yaml:"writeTimeout"`
 		IdleTimeout     int       `yaml:"idleTimeout"`
@@ -21,6 +22,7 @@ func DefaultServerConfig() ServerConfig {
 	return ServerConfig{
 		Host:            "localhost",
 		Port:            "8080",
+		BaseUri:         "/api/v0",
 		ReadTimeout:     15,      // seconds
 		WriteTimeout:    15,      // seconds
 		IdleTimeout:     60,      // seconds

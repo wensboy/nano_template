@@ -11,6 +11,8 @@ import {
 import { request } from "@/api/client";
 import { PresignOssObject } from "@/api/aliyun/oss";
 import { useAppSelector } from "@/app/hooks";
+import { cx, getThemeTone } from "@/app/themeStyles";
+import AlertPop from "@/components/internal/AlertPop";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -37,10 +39,14 @@ function formatSize(bytes: number): string {
 /** Tiny SVG ring that fills clockwise as progress goes from 0 → 100. */
 function ProgressRing({
   progress,
+  progressClassName,
   size = 64,
+  trackClassName,
 }: {
   progress: number;
+  progressClassName: string;
   size?: number;
+  trackClassName: string;
 }) {
   const strokeW = 3;
   const r = (size - strokeW) / 2;
@@ -61,7 +67,7 @@ function ProgressRing({
         r={r}
         stroke="currentColor"
         strokeWidth={strokeW}
-        className="text-black/10"
+        className={trackClassName}
       />
       {/* fill arc – rotates from 12 o'clock clockwise */}
       <circle
@@ -69,13 +75,13 @@ function ProgressRing({
         cy={size / 2}
         fill="none"
         r={r}
-        stroke="#22c55e"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeWidth={strokeW}
         strokeDasharray={circ}
         strokeDashoffset={offset}
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        className="transition-[stroke-dashoffset] duration-300 ease-linear"
+        className={cx("transition-[stroke-dashoffset] duration-300 ease-linear", progressClassName)}
       />
     </svg>
   );
@@ -131,11 +137,12 @@ export default function FilePicker({
   maxFiles = 10,
   maxSize,
 }: FilePickerProps) {
-  const themeMode = useAppSelector((state) => state.theme.mode);
-  const isDark = themeMode === "dark";
+  const theme = useAppSelector((state) => state.theme);
+  const tone = getThemeTone(theme);
 
   const [files, setFiles] = useState<File[]>([]);
   const [open, setOpen] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const popoverId = useId();
@@ -151,6 +158,8 @@ export default function FilePicker({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const incoming = Array.from(e.target.files ?? []);
       if (incoming.length === 0) return;
+
+      setUploadMessage("");
 
       let valid = incoming;
       if (maxSize != null) {
@@ -183,6 +192,7 @@ export default function FilePicker({
     if (snapshot.length === 0) return;
 
     // setOpen(false);
+    setUploadMessage("");
     setUploading(true);
     const map = uploadMapRef.current;
 
@@ -208,7 +218,8 @@ export default function FilePicker({
           return next;
         });
       } catch (err) {
-        console.error(`Upload failed for ${file.name}:`, err);
+        const reason = err instanceof Error ? err.message : "上传失败，请稍后重试";
+        setUploadMessage(`${file.name}: ${reason}`);
       } finally {
         map.delete(file);
         setTick((t) => t + 1);
@@ -218,15 +229,10 @@ export default function FilePicker({
     setUploading(false);
   }, [files, uploading, onFilesChange]);
 
-  const barBg = isDark ? "bg-[#3c3836]" : "bg-[#ebdbb2]";
-  const barText = isDark ? "text-[#ebdbb2]" : "text-[#282828]";
-  const popBg = isDark
-    ? "bg-[#282828] border-[#504945]"
-    : "bg-[#fbf1c7] border-[#d5c4a1]";
-  const thumbBg = isDark ? "bg-[#3c3836]" : "bg-[#ebdbb2]";
-
   return (
     <div className="relative inline-flex items-center">
+      <AlertPop message={uploadMessage} variant="destructive" />
+
       {/* Hidden native file input */}
       <input
         ref={inputRef}
@@ -239,12 +245,21 @@ export default function FilePicker({
 
       {/* ── collapsed bar ──────────────────────────────────────────────── */}
       <div
-        className={`flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium shadow-sm transition ${barBg} ${barText}`}
+        className={cx(
+          "flex items-center gap-1 rounded-md border px-1.5 py-1 text-sm font-medium shadow-sm transition-colors",
+          tone.border,
+          tone.surface,
+          tone.surfaceForeground,
+        )}
       >
         {/* add button */}
         <button
           aria-label="Add files"
-          className="flex h-7 w-7 items-center justify-center rounded-full transition hover:scale-110 active:scale-95"
+          className={cx(
+            "flex h-7 w-7 items-center justify-center rounded-md transition-colors",
+            tone.focusRing,
+            tone.secondaryHover,
+          )}
           disabled={uploading}
           onClick={handleAdd}
           type="button"
@@ -257,7 +272,11 @@ export default function FilePicker({
           aria-controls={popoverId}
           aria-expanded={open}
           aria-label="Toggle file list"
-          className="flex items-center gap-1 rounded-full px-1.5 py-0.5 transition hover:opacity-70"
+          className={cx(
+            "flex h-7 items-center gap-1 rounded-md px-2 transition-colors",
+            tone.focusRing,
+            tone.secondaryHover,
+          )}
           onClick={() => setOpen((v) => !v)}
           type="button"
         >
@@ -272,7 +291,12 @@ export default function FilePicker({
         {files.length > 0 && (
           <button
             aria-label="Upload all files"
-            className={`flex h-7 w-7 items-center justify-center rounded-full transition hover:scale-110 active:scale-95 ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+            className={cx(
+              "flex h-7 w-7 items-center justify-center rounded-md transition-colors",
+              tone.focusRing,
+              tone.secondaryHover,
+              uploading && "pointer-events-none opacity-50",
+            )}
             disabled={uploading}
             onClick={handleUpload}
             type="button"
@@ -285,7 +309,12 @@ export default function FilePicker({
       {/* ── popover file list ──────────────────────────────────────────── */}
       {open && files.length > 0 && (
         <div
-          className={`absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border p-3 shadow-[0_16px_48px_rgba(0,0,0,0.25)] ${popBg}`}
+          className={cx(
+            "absolute left-0 top-full z-50 mt-2 w-64 rounded-lg border p-3 shadow-xl",
+            tone.border,
+            tone.surface,
+            tone.surfaceForeground,
+          )}
           id={popoverId}
         >
           <ul className="grid grid-cols-3 gap-2 justify-items-center">
@@ -295,22 +324,30 @@ export default function FilePicker({
 
               return (
                 <li
-                  className={`group relative flex h-16 w-16 flex-col items-center justify-center rounded-lg border text-center transition ${isDone ? "bg-green-500 border-green-400" : `${thumbBg} ${isDark ? "border-[#504945]" : "border-[#d5c4a1]"}`}`}
+                  className={cx(
+                    "group relative flex h-16 w-16 flex-col items-center justify-center rounded-md border text-center transition-colors",
+                    isDone ? tone.fileDone : cx(tone.muted, tone.border),
+                  )}
                   key={`${file.name}-${file.size}-${index}`}
                   title={`${file.name}\n${formatSize(file.size)}`}
                 >
                   {/* progress ring overlay */}
                   {status && !isDone && (
-                    <ProgressRing progress={status.progress} size={64} />
+                    <ProgressRing
+                      progress={status.progress}
+                      progressClassName={tone.progress}
+                      size={64}
+                      trackClassName={tone.progressTrack}
+                    />
                   )}
 
                   {/* done checkmark */}
                   {isDone ? (
-                    <LuCheck className="text-white" size={26} />
+                    <LuCheck className="shrink-0" size={26} />
                   ) : (
                     <>
-                      <LuFile className="shrink-0 text-lg opacity-60" />
-                      <span className="mt-0.5 block w-full truncate px-1 text-[10px] leading-tight opacity-70">
+                      <LuFile className={cx("shrink-0 text-lg", tone.iconMuted)} />
+                      <span className={cx("mt-0.5 block w-full truncate px-1 text-[10px] leading-tight", tone.subtleForeground)}>
                         {file.name}
                       </span>
                     </>
@@ -320,7 +357,12 @@ export default function FilePicker({
                   {!status && (
                     <button
                       aria-label={`Remove ${file.name}`}
-                      className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white opacity-0 shadow-sm transition hover:bg-red-600 group-hover:opacity-100"
+                      className={cx(
+                        "absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full opacity-0 shadow-sm transition-colors group-hover:opacity-100",
+                        tone.destructive,
+                        tone.destructiveForeground,
+                        tone.destructiveHover,
+                      )}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleRemove(index);

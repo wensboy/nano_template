@@ -1,14 +1,19 @@
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
-const BASE_URI = "/api/v1"
+import { store } from "@/app/store";
+import { clearUser } from "@/app/store/userSlice";
+
+const BASE_URI = "/api/v1";
+export const UNAUTHORIZED_EVENT = "auth:unauthorized";
+
+function handleUnauthorized() {
+  store.dispatch(clearUser());
+  window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT));
+}
 
 // 创建 axios 实例
 const api = axios.create({
-  baseURL: BASE_URI || "/api",
+  baseURL: BASE_URI || "/api/v0",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -16,32 +21,14 @@ const api = axios.create({
   withCredentials: true, // 开启 cookie 处理
 });
 
-// 请求拦截器
-api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    // 从 sessionStorage 获取 token
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      config.headers.set("Authorization", `Bearer ${token}`);
-    }
-    return config;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  },
-);
-
 // 响应拦截器
 api.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
   (error: AxiosError) => {
-    // 处理 401 错误
     if (error.response?.status === 401) {
-      // todo: 如果 sessionStorage中有 token, 直接删除. 如果没有, 尝试发起登出请求通知后端将 cookie 中的token相关的字段清除
-      // 定向到登录页面. 
-      sessionStorage.removeItem("token");
+      handleUnauthorized();
     }
     return Promise.reject(error);
   },
