@@ -12,8 +12,7 @@
   - [common](#3-1)
   - [role](#3-2)
   - [user](#3-3)
-  - [chat](#3-4)
-    - [ai](#3-4-1)
+  - [chat::ai](#3-4)
 ---
 
 
@@ -123,6 +122,7 @@ eg: CreateProfile, DeleteProfile
 4. 数据库建模尽可能解耦, 只定义必要的字段和表, 避免过度设计.
 5. 对于 update 操作, 通常使用 map 在 service 和 handler 之间传递会比大量参数传递要更好, 对于 query 参数过多的情况也是类似.
 6. 涉及到多表关联成功或者失败的操作, 采用事务处理.
+7. 数据库映射字段结构理论上针对数据库可空字段应该为 sql 标准包的兼容类型: *Null 类型.
 ```
 
 ### <a id="3">built-in</a>
@@ -143,15 +143,33 @@ last-modified: "2026-06-02 pm"
 #### <a id="3-2">role</a>
 
 ```yaml
-desc: 系统角色定义处理
+desc: 系统角色处理
 rpc: true
 web: true
+check: "passed"
+version: "v1.0.0"
+last-modified: "2026-06-04 am"
 ```
 
 #### <a id="3-3">user</a>
 
-#### <a id="3-4">chat</a>
+```yaml
+desc: 用户处理
+rpc: true
+web: true
+check: "passed"
+version: "v1.0.0"
+last-modified: "2026-06-04 am"
+```
 
-##### <a id="3-4-1">ai</a>
+#### <a id="3-4">chat::ai</a>
 
+```yaml
+desc: ai集成处理
+rpc: true
+web: true
+check: "testing"
+version: "v1.0.0"
+last-modified: "2026-06-04 am"
+```
 
