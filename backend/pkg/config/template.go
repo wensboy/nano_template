@@ -2,7 +2,6 @@ package config
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"path/filepath"
 	"sync"
@@ -58,17 +57,7 @@ func MapTemplates(cfg *TemplateConfig) {
 	}
 
 	go func(tasks []templateLoadJob) {
-		pool := util.NewPool(util.WithMaxWorkers(len(tasks)))
-		defer pool.Close()
-
-		results := util.Map(
-			pool,
-			context.Background(),
-			tasks,
-			func(_ context.Context, task templateLoadJob) (Template, error) {
-				return readTemplate(task.Path)
-			},
-		)
+		results := loadTemplates(tasks)
 
 		templates := make(map[string]Template, len(results))
 		failed := 0
@@ -90,6 +79,12 @@ func MapTemplates(cfg *TemplateConfig) {
 type templateLoadJob struct {
 	Key  string
 	Path string
+}
+
+type templateLoadResult struct {
+	Input templateLoadJob
+	Value Template
+	Err   error
 }
 
 func buildTemplateLoadJobs(cfg *TemplateConfig, basePath string) []templateLoadJob {
@@ -116,6 +111,36 @@ func buildTemplateLoadJobs(cfg *TemplateConfig, basePath string) []templateLoadJ
 	}
 
 	return jobs
+}
+
+func loadTemplates(jobs []templateLoadJob) []templateLoadResult {
+	results := make(chan templateLoadResult, len(jobs))
+	var wg sync.WaitGroup
+
+	for _, job := range jobs {
+		wg.Add(1)
+		go func(job templateLoadJob) {
+			defer wg.Done()
+
+			tmpl, err := readTemplate(job.Path)
+			results <- templateLoadResult{
+				Input: job,
+				Value: tmpl,
+				Err:   err,
+			}
+		}(job)
+	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	loaded := make([]templateLoadResult, 0, len(jobs))
+	for result := range results {
+		loaded = append(loaded, result)
+	}
+	return loaded
 }
 
 func readTemplate(path string) (Template, error) {
