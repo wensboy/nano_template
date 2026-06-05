@@ -6,6 +6,32 @@ definitions:
     type: object
   example_com_nano_template_pkg_web_middleware.EmptyData:
     type: object
+  example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_chat_ai_GetRecordResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/pkg_web_services_chat_ai.GetRecordResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_chat_ai_GetSessionResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/pkg_web_services_chat_ai.GetSessionResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
   example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_role_GetResponse:
     properties:
       items:
@@ -42,6 +68,156 @@ definitions:
       message:
         description: response message
         type: string
+    type: object
+  pkg_web_services_chat_ai.CreateSessionRequest:
+    properties:
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  pkg_web_services_chat_ai.CreateSessionResponse:
+    properties:
+      session_id:
+        type: string
+    type: object
+  pkg_web_services_chat_ai.GenerateModalRequest:
+    properties:
+      ai_model:
+        type: string
+      session_id:
+        type: string
+      user_message:
+        type: string
+    required:
+    - ai_model
+    - session_id
+    - user_message
+    type: object
+  pkg_web_services_chat_ai.GenerateRequest:
+    properties:
+      ai_model:
+        type: string
+      session_id:
+        type: string
+      user_message:
+        type: string
+    required:
+    - ai_model
+    - session_id
+    - user_message
+    type: object
+  pkg_web_services_chat_ai.GetAppendixResponse:
+    properties:
+      appendix_id:
+        type: integer
+      created_at:
+        type: string
+      mime:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      source:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  pkg_web_services_chat_ai.GetRecordResponse:
+    properties:
+      ai_message:
+        type: string
+      ai_model:
+        type: string
+      created_at:
+        type: string
+      record_id:
+        type: integer
+      updated_at:
+        type: string
+      user_message:
+        type: string
+    type: object
+  pkg_web_services_chat_ai.GetSessionResponse:
+    properties:
+      created_at:
+        type: string
+      session_id:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  pkg_web_services_chat_ai.ListAppendixsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/pkg_web_services_chat_ai.GetAppendixResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  pkg_web_services_chat_ai.RecordRequest:
+    properties:
+      ai_model:
+        type: string
+      session_id:
+        type: string
+      user_message:
+        type: string
+    required:
+    - ai_model
+    - session_id
+    - user_message
+    type: object
+  pkg_web_services_chat_ai.RecordResponse:
+    properties:
+      record_id:
+        type: integer
+    type: object
+  pkg_web_services_chat_ai.UpdateAppendixRequest:
+    properties:
+      link:
+        type: string
+    type: object
+  pkg_web_services_chat_ai.UpdateRecordRequest:
+    properties:
+      ai_message:
+        type: string
+    type: object
+  pkg_web_services_chat_ai.UpdateSessionRequest:
+    properties:
+      title:
+        type: string
+    type: object
+  pkg_web_services_chat_ai.UploadAppendixRequest:
+    properties:
+      link:
+        type: string
+      message_id:
+        type: integer
+      mime:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      source:
+        type: integer
+    required:
+    - link
+    - message_id
+    - mime
+    - name
+    - size
+    - source
+    type: object
+  pkg_web_services_chat_ai.UploadAppendixResponse:
+    properties:
+      appendix_id:
+        type: integer
     type: object
   pkg_web_services_common.GetTemplateResponse:
     properties:
@@ -323,6 +499,447 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
+  /aichat/appendixs:
+    post:
+      consumes:
+      - application/json
+      description: create an ai chat appendix record
+      parameters:
+      - description: Upload appendix request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.UploadAppendixRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_chat_ai.UploadAppendixResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: upload ai chat appendix
+      tags:
+      - aichat
+  /aichat/appendixs/{appendix_id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete an ai chat appendix by appendix id
+      parameters:
+      - description: Appendix ID
+        in: path
+        name: appendix_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: delete ai chat appendix
+      tags:
+      - aichat
+    put:
+      consumes:
+      - application/json
+      description: update an ai chat appendix by appendix id
+      parameters:
+      - description: Appendix ID
+        in: path
+        name: appendix_id
+        required: true
+        type: integer
+      - description: Update appendix request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.UpdateAppendixRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: update ai chat appendix
+      tags:
+      - aichat
+  /aichat/appendixs/{message_id}:
+    get:
+      consumes:
+      - application/json
+      description: retrieve ai chat appendix records by message id
+      parameters:
+      - description: Message ID
+        in: path
+        name: message_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_chat_ai.ListAppendixsResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: list ai chat appendixs
+      tags:
+      - aichat
+  /aichat/generate:
+    post:
+      consumes:
+      - application/json
+      description: stream ai chat generation response
+      parameters:
+      - description: Generate request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.GenerateRequest'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: SSE stream
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: generate ai chat response
+      tags:
+      - aichat
+  /aichat/generate-modal:
+    post:
+      consumes:
+      - application/json
+      description: stream ai chat modal generation response
+      parameters:
+      - description: Generate modal request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.GenerateModalRequest'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: SSE stream
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: generate ai chat modal response
+      tags:
+      - aichat
+  /aichat/records:
+    post:
+      consumes:
+      - application/json
+      description: create an ai chat message record
+      parameters:
+      - description: Record request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.RecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_chat_ai.RecordResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: create ai chat record
+      tags:
+      - aichat
+  /aichat/records/{record_id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete an ai chat message record by record id
+      parameters:
+      - description: Record ID
+        in: path
+        name: record_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: delete ai chat record
+      tags:
+      - aichat
+    put:
+      consumes:
+      - application/json
+      description: update an ai chat message record by record id
+      parameters:
+      - description: Record ID
+        in: path
+        name: record_id
+        required: true
+        type: integer
+      - description: Update record request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.UpdateRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: update ai chat record
+      tags:
+      - aichat
+  /aichat/records/{session_id}:
+    get:
+      consumes:
+      - application/json
+      description: retrieve ai chat message records with pagination
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default 10)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_chat_ai_GetRecordResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: list ai chat records
+      tags:
+      - aichat
+  /aichat/sessions:
+    get:
+      consumes:
+      - application/json
+      description: retrieve ai chat sessions for current authenticated user with pagination
+      parameters:
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default 10)
+        in: query
+        name: page_size
+        type: integer
+      - description: Session keyword
+        in: query
+        name: key_words
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Pagination-pkg_web_services_chat_ai_GetSessionResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: list ai chat sessions
+      tags:
+      - aichat
+    post:
+      consumes:
+      - application/json
+      description: create a new ai chat session for current authenticated user
+      parameters:
+      - description: Create session request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.CreateSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_chat_ai.CreateSessionResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: create ai chat session
+      tags:
+      - aichat
+  /aichat/sessions/{session_id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete an ai chat session by session id
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: delete ai chat session
+      tags:
+      - aichat
+    get:
+      description: retrieve a single ai chat session by session id
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/pkg_web_services_chat_ai.GetSessionResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: get ai chat session
+      tags:
+      - aichat
+    put:
+      consumes:
+      - application/json
+      description: update an ai chat session by session id
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      - description: Update session request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pkg_web_services_chat_ai.UpdateSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/example_com_nano_template_pkg_web_middleware.EmptyData'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: update ai chat session
+      tags:
+      - aichat
   /inspect:
     get:
       description: inspect server information
